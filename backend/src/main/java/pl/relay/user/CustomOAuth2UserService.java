@@ -9,6 +9,7 @@ import java.util.LinkedHashMap;
 import java.util.Map;
 import java.util.Optional;
 import lombok.RequiredArgsConstructor;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.oauth2.client.OAuth2AuthorizedClient;
 import org.springframework.security.oauth2.client.OAuth2AuthorizedClientService;
@@ -23,7 +24,6 @@ import org.springframework.security.oauth2.core.OAuth2RefreshToken;
 import org.springframework.security.oauth2.core.user.DefaultOAuth2User;
 import org.springframework.security.oauth2.core.user.OAuth2User;
 import org.springframework.security.web.authentication.AuthenticationSuccessHandler;
-import org.springframework.security.web.authentication.SavedRequestAwareAuthenticationSuccessHandler;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -36,7 +36,9 @@ public class CustomOAuth2UserService implements OAuth2UserService<OAuth2UserRequ
     private final UserRepository userRepository;
     private final OAuth2AuthorizedClientService authorizedClientService;
     private final DefaultOAuth2UserService delegate = new DefaultOAuth2UserService();
-    private final SavedRequestAwareAuthenticationSuccessHandler successHandler = new SavedRequestAwareAuthenticationSuccessHandler();
+
+    @Value("${relay.frontend.base-url:http://localhost:5173}")
+    private String frontendBaseUrl;
 
     @Override
     public OAuth2User loadUser(OAuth2UserRequest userRequest) throws OAuth2AuthenticationException {
@@ -68,7 +70,7 @@ public class CustomOAuth2UserService implements OAuth2UserService<OAuth2UserRequ
             saveOrUpdateStravaUser(oauth2Authentication.getPrincipal(), authorizedClient);
         }
 
-        successHandler.onAuthenticationSuccess(request, response, authentication);
+        response.sendRedirect(frontendBaseUrl);
     }
 
     private void saveOrUpdateStravaUser(OAuth2User oauth2User, OAuth2AuthorizedClient authorizedClient) {
