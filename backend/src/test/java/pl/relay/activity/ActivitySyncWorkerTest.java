@@ -1,6 +1,7 @@
 package pl.relay.activity;
 
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.verify;
@@ -15,6 +16,8 @@ import org.springframework.http.MediaType;
 import org.springframework.web.reactive.function.client.ClientResponse;
 import org.springframework.web.reactive.function.client.ExchangeFunction;
 import org.springframework.web.reactive.function.client.WebClient;
+import pl.relay.challenge.ChallengeService;
+import pl.relay.user.StravaTokenService;
 import pl.relay.user.User;
 import pl.relay.user.UserRepository;
 import reactor.core.publisher.Mono;
@@ -26,6 +29,8 @@ class ActivitySyncWorkerTest {
         var userRepository = mock(UserRepository.class);
         var activityRepository = mock(ActivityRepository.class);
         var activityNormalizerService = mock(ActivityNormalizerService.class);
+        var challengeService = mock(ChallengeService.class);
+        var stravaTokenService = mock(StravaTokenService.class);
 
         var user = User.builder()
                 .id(7L)
@@ -33,8 +38,10 @@ class ActivitySyncWorkerTest {
                 .build();
 
         when(userRepository.findAll()).thenReturn(List.of(user));
+        when(stravaTokenService.ensureValidAccessToken(user)).thenReturn(user);
         when(activityRepository.existsByStravaActivityId(101L)).thenReturn(false);
         when(activityRepository.existsByStravaActivityId(102L)).thenReturn(true);
+        when(activityRepository.save(any(Activity.class))).thenAnswer(invocation -> invocation.getArgument(0));
         when(activityNormalizerService.calculateTeamPoints(eq("Run"), eq(2_500d), eq(1_500L))).thenReturn(2);
 
         var webClient = WebClient.builder()
@@ -45,6 +52,8 @@ class ActivitySyncWorkerTest {
                 userRepository,
                 activityRepository,
                 activityNormalizerService,
+                challengeService,
+                stravaTokenService,
                 webClient
         );
 
@@ -57,6 +66,8 @@ class ActivitySyncWorkerTest {
         assertThat(savedActivity.getValue().getUserId()).isEqualTo(7L);
         assertThat(savedActivity.getValue().getTeamPoints()).isEqualTo(2);
         assertThat(savedActivity.getValue().getType()).isEqualTo("Run");
+        verify(stravaTokenService).ensureValidAccessToken(user);
+        verify(challengeService).addPointsToActiveChallenge(2);
     }
 
     private ExchangeFunction stravaActivitiesResponse() {
