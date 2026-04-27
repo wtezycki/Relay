@@ -15,6 +15,8 @@ import org.junit.jupiter.api.Test;
 import org.mockito.ArgumentCaptor;
 import org.springframework.http.HttpStatus;
 import org.springframework.web.server.ResponseStatusException;
+import pl.relay.challenge.dto.ChallengeCreateRequest;
+import pl.relay.challenge.dto.ChallengeUpdateRequest;
 
 class ChallengeServiceTest {
 

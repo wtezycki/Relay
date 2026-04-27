@@ -1,4 +1,4 @@
-package pl.relay.challenge;
+package pl.relay.challenge.dto;
 
 public record ChallengeResponse(
         Long id,

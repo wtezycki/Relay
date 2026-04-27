@@ -1,4 +1,4 @@
-package pl.relay.challenge;
+package pl.relay.challenge.web;
 
 import lombok.RequiredArgsConstructor;
 import java.util.List;
@@ -11,6 +11,10 @@ import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
+import pl.relay.challenge.ChallengeService;
+import pl.relay.challenge.dto.ChallengeCreateRequest;
+import pl.relay.challenge.dto.ChallengeResponse;
+import pl.relay.challenge.dto.ChallengeUpdateRequest;
 
 @RestController
 @RequestMapping("/api/challenge")

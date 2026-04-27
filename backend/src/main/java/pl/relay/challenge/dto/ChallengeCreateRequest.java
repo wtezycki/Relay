@@ -1,4 +1,4 @@
-package pl.relay.challenge;
+package pl.relay.challenge.dto;
 
 public record ChallengeCreateRequest(
         String name,

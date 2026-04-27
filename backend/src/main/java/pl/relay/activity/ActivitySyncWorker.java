@@ -8,6 +8,7 @@ import org.springframework.stereotype.Component;
 import org.springframework.web.reactive.function.client.WebClient;
 import org.springframework.web.reactive.function.client.WebClientResponseException;
 import pl.relay.challenge.ChallengeService;
+import pl.relay.activity.dto.StravaActivityResponse;
 import pl.relay.user.User;
 import pl.relay.user.UserRepository;
 
