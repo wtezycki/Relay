@@ -9,6 +9,7 @@ import org.springframework.web.reactive.function.client.WebClient;
 import org.springframework.web.reactive.function.client.WebClientResponseException;
 import pl.relay.challenge.ChallengeService;
 import pl.relay.activity.dto.StravaActivityResponse;
+import pl.relay.user.StravaTokenService;
 import pl.relay.user.User;
 import pl.relay.user.UserRepository;
 
@@ -23,6 +24,7 @@ public class ActivitySyncWorker {
     private final ActivityRepository activityRepository;
     private final ActivityNormalizerService activityNormalizerService;
     private final ChallengeService challengeService;
+    private final StravaTokenService stravaTokenService;
     private final WebClient stravaWebClient;
 
     @Scheduled(fixedDelayString = "${relay.strava.sync.fixed-delay-ms:14400000}")
@@ -32,10 +34,12 @@ public class ActivitySyncWorker {
 
     private void syncActivitiesForUser(User user) {
         try {
-            fetchActivities(user).stream()
+            var userWithValidToken = stravaTokenService.ensureValidAccessToken(user);
+
+            fetchActivities(userWithValidToken).stream()
                     .filter(activity -> activity.id() != null)
                     .filter(activity -> !activityRepository.existsByStravaActivityId(activity.id()))
-                    .map(activity -> mapToActivity(user, activity))
+                    .map(activity -> mapToActivity(userWithValidToken, activity))
                     .forEach(this::saveActivityAndUpdateChallenge);
         } catch (WebClientResponseException exception) {
             log.warn(

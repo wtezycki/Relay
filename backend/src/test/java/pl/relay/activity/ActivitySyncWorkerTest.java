@@ -17,6 +17,7 @@ import org.springframework.web.reactive.function.client.ClientResponse;
 import org.springframework.web.reactive.function.client.ExchangeFunction;
 import org.springframework.web.reactive.function.client.WebClient;
 import pl.relay.challenge.ChallengeService;
+import pl.relay.user.StravaTokenService;
 import pl.relay.user.User;
 import pl.relay.user.UserRepository;
 import reactor.core.publisher.Mono;
@@ -29,6 +30,7 @@ class ActivitySyncWorkerTest {
         var activityRepository = mock(ActivityRepository.class);
         var activityNormalizerService = mock(ActivityNormalizerService.class);
         var challengeService = mock(ChallengeService.class);
+        var stravaTokenService = mock(StravaTokenService.class);
 
         var user = User.builder()
                 .id(7L)
@@ -36,6 +38,7 @@ class ActivitySyncWorkerTest {
                 .build();
 
         when(userRepository.findAll()).thenReturn(List.of(user));
+        when(stravaTokenService.ensureValidAccessToken(user)).thenReturn(user);
         when(activityRepository.existsByStravaActivityId(101L)).thenReturn(false);
         when(activityRepository.existsByStravaActivityId(102L)).thenReturn(true);
         when(activityRepository.save(any(Activity.class))).thenAnswer(invocation -> invocation.getArgument(0));
@@ -50,6 +53,7 @@ class ActivitySyncWorkerTest {
                 activityRepository,
                 activityNormalizerService,
                 challengeService,
+                stravaTokenService,
                 webClient
         );
 
@@ -62,6 +66,7 @@ class ActivitySyncWorkerTest {
         assertThat(savedActivity.getValue().getUserId()).isEqualTo(7L);
         assertThat(savedActivity.getValue().getTeamPoints()).isEqualTo(2);
         assertThat(savedActivity.getValue().getType()).isEqualTo("Run");
+        verify(stravaTokenService).ensureValidAccessToken(user);
         verify(challengeService).addPointsToActiveChallenge(2);
     }
 
