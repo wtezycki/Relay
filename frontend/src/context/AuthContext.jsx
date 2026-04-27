@@ -4,6 +4,7 @@ import api from '../services/api.js'
 export const AuthContext = createContext(null)
 
 const STRAVA_LOGIN_URL = 'http://localhost:8080/oauth2/authorization/strava'
+const LOGOUT_URL = 'http://localhost:8080/logout'
 
 export function AuthProvider({ children }) {
   const [user, setUser] = useState(null)
@@ -42,11 +43,14 @@ export function AuthProvider({ children }) {
       isLoading,
       isAuthenticated: Boolean(user),
       loginWithStrava() {
+        if (isLoading || user) {
+          return
+        }
+
         window.location.assign(STRAVA_LOGIN_URL)
       },
-      async logout() {
-        await api.post('/logout')
-        window.location.assign('/')
+      logout() {
+        window.location.assign(LOGOUT_URL)
       },
       refreshUser: async () => {
         const response = await api.get('/api/users/me')

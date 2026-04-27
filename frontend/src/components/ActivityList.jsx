@@ -2,7 +2,7 @@ function ActivityList({ activities }) {
   if (!activities.length) {
     return (
       <div className="rounded-2xl border border-dashed border-pine/20 bg-pine/5 p-5 text-sm text-ink/70">
-        No activities have been synchronized yet.
+        Żadne aktywności nie zostały jeszcze zsynchronizowane.
       </div>
     )
   }

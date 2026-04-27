@@ -25,10 +25,10 @@ function CreateChallengeForm({ onCreated }) {
       })
 
       setFormState(INITIAL_FORM)
-      setMessage('Challenge created.')
+      setMessage('Wyzwanie zostało utworzone.')
       onCreated?.(response.data)
     } catch (error) {
-      setMessage(error.response?.data?.message || 'Failed to create challenge.')
+      setMessage(error.response?.data?.message || 'Nie udało się utworzyć wyzwania.')
     } finally {
       setIsSaving(false)
     }
@@ -37,17 +37,17 @@ function CreateChallengeForm({ onCreated }) {
   return (
     <form className="grid gap-4 md:grid-cols-[1.5fr_1fr_auto]" onSubmit={handleSubmit}>
       <label className="grid gap-2">
-        <span className="text-sm font-medium text-ink/80">Goal name</span>
+        <span className="text-sm font-medium text-ink/80">Nazwa celu</span>
         <input
           className="rounded-2xl border border-pine/20 bg-white px-4 py-3 outline-none transition focus:border-ember"
           onChange={(event) => setFormState((current) => ({ ...current, name: event.target.value }))}
-          placeholder="Run to Tokyo"
+          placeholder="Bieg do Tokio"
           required
           value={formState.name}
         />
       </label>
       <label className="grid gap-2">
-        <span className="text-sm font-medium text-ink/80">Target points</span>
+        <span className="text-sm font-medium text-ink/80">Docelowe punkty</span>
         <input
           className="rounded-2xl border border-pine/20 bg-white px-4 py-3 outline-none transition focus:border-ember"
           min="1"
@@ -62,7 +62,7 @@ function CreateChallengeForm({ onCreated }) {
         disabled={isSaving}
         type="submit"
       >
-        {isSaving ? 'Saving...' : 'Create goal'}
+        {isSaving ? 'Zapisywanie...' : 'Utwórz cel'}
       </button>
       {message ? <p className="md:col-span-3 text-sm text-ink/70">{message}</p> : null}
     </form>

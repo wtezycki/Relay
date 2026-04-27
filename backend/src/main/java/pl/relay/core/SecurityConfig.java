@@ -21,7 +21,10 @@ public class SecurityConfig {
     private final CustomOAuth2UserService customOAuth2UserService;
 
     @Bean
-    SecurityFilterChain securityFilterChain(HttpSecurity http) throws Exception {
+    SecurityFilterChain securityFilterChain(
+            HttpSecurity http,
+            @Value("${relay.frontend.base-url:http://localhost:5173}") String frontendBaseUrl
+    ) throws Exception {
         http
                 .cors(Customizer.withDefaults())
                 .authorizeHttpRequests(authorize -> authorize
@@ -33,7 +36,15 @@ public class SecurityConfig {
                         .userInfoEndpoint(userInfo -> userInfo.userService(customOAuth2UserService))
                         .successHandler(customOAuth2UserService)
                 )
-                .logout(Customizer.withDefaults());
+                .logout(logout -> logout
+                        .logoutRequestMatcher(request ->
+                                "GET".equals(request.getMethod()) && "/logout".equals(request.getServletPath())
+                        )
+                        .invalidateHttpSession(true)
+                        .clearAuthentication(true)
+                        .deleteCookies("JSESSIONID")
+                        .logoutSuccessHandler((request, response, authentication) -> response.sendRedirect(frontendBaseUrl))
+                );
 
         return http.build();
     }

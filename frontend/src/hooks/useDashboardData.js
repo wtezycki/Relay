@@ -40,9 +40,9 @@ export function useDashboardData(isAuthenticated) {
         }
 
         if (error.response?.status === 404) {
-          setErrorMessage('No active challenge is configured yet.')
+          setErrorMessage('Nie skonfigurowano jeszcze aktywnego wyzwania.')
         } else {
-          setErrorMessage('Failed to load Relay dashboard data.')
+          setErrorMessage('Nie udało się wczytać danych dashboardu Relay.')
         }
       } finally {
         if (isMounted) {
