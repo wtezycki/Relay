@@ -14,6 +14,8 @@ import org.springframework.web.cors.CorsConfigurationSource;
 import org.springframework.web.cors.UrlBasedCorsConfigurationSource;
 import pl.relay.user.CustomOAuth2UserService;
 
+import java.util.List;
+
 @Configuration
 @RequiredArgsConstructor
 public class SecurityConfig {
@@ -26,7 +28,10 @@ public class SecurityConfig {
     private String allowedOrigin;
 
     @Bean
-    SecurityFilterChain securityFilterChain(HttpSecurity http) throws Exception {
+    SecurityFilterChain securityFilterChain(
+            HttpSecurity http,
+            @Value("${relay.frontend.base-url:http://localhost:5173}") String frontendBaseUrl
+    ) throws Exception {
         http
                 .cors(Customizer.withDefaults())
                 .authorizeHttpRequests(authorize -> authorize
@@ -39,7 +44,15 @@ public class SecurityConfig {
                         .userInfoEndpoint(userInfo -> userInfo.userService(customOAuth2UserService))
                         .successHandler(customOAuth2UserService)
                 )
-                .logout(Customizer.withDefaults());
+                .logout(logout -> logout
+                        .logoutRequestMatcher(request ->
+                                "GET".equals(request.getMethod()) && "/logout".equals(request.getServletPath())
+                        )
+                        .invalidateHttpSession(true)
+                        .clearAuthentication(true)
+                        .deleteCookies("JSESSIONID")
+                        .logoutSuccessHandler((request, response, authentication) -> response.sendRedirect(frontendBaseUrl))
+                );
 
         return http.build();
     }

@@ -39,3 +39,5 @@ spring:
 relay:
   cors:
     allowed-origin: http://localhost:5173
+  frontend:
+    base-url: http://localhost:5173
