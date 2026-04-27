@@ -1,0 +1,51 @@
+# --- IDE & Editors ---
+.idea/
+.vscode/
+.project
+
+# --- System & Environment ---
+.env
+.env.local
+.env.*.local
+*.log
+bin/
+build/
+dist/
+temp/
+
+# --- Java / Spring Boot (Backend) ---
+backend/target/
+backend/.gradle/
+backend/build/
+backend/out/
+backend/*.jar
+backend/*.war
+backend/*.zip
+backend/*.tar.gz
+
+# Spring Boot specific configuration (Sensitive data)
+backend/src/main/resources/application-local.yml
+backend/src/main/resources/application-local.properties
+
+# --- Node / React / Vite (Frontend) ---
+node_modules/
+frontend/node_modules/
+frontend/dist/
+frontend/build/
+frontend/.vite/
+frontend/coverage/
+frontend/npm-debug.log*
+frontend/yarn-debug.log*
+frontend/yarn-error.log*
+frontend/pnpm-debug.log*
+
+# --- Database (SQLite) ---
+*.sqlite
+*.sqlite-journal
+*.db
+backend/*.sqlite
+backend/*.db
+
+# --- AI & Tooling ---
+.cache/
+.codex
