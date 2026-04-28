@@ -1,6 +1,7 @@
 package pl.relay.activity.dto;
 
 import java.time.Instant;
+import java.util.Set;
 
 public record ActivityResponse(
         Long id,
@@ -14,6 +15,7 @@ public record ActivityResponse(
         Instant occurredAt,
         Double distanceMeters,
         Long movingTimeSeconds,
-        int userConsistencyStreak
+        int userConsistencyStreak,
+        Set<Long> likedUserIds
 ) {
 }

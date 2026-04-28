@@ -7,6 +7,11 @@ import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
 import jakarta.persistence.Table;
 import java.time.Instant;
+import java.util.HashSet;
+import java.util.Set;
+import jakarta.persistence.ElementCollection;
+import jakarta.persistence.CollectionTable;
+import jakarta.persistence.JoinColumn;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
@@ -49,4 +54,10 @@ public class Activity {
     private Double distanceMeters;
 
     private Long movingTimeSeconds;
+
+    @ElementCollection
+    @CollectionTable(name = "activity_kudos", joinColumns = @JoinColumn(name = "activity_id"))
+    @Column(name = "user_id")
+    @Builder.Default
+    private Set<Long> likedUserIds = new HashSet<>();
 }

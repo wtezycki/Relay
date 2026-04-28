@@ -2,6 +2,7 @@ import { useEffect, useState } from 'react'
 import api, { getApiErrorMessage } from '../services/api.js'
 
 export function useDashboardData(isAuthenticated) {
+  const [challenge, setChallenge] = useState(null)
   const [challenges, setChallenges] = useState([])
   const [activities, setActivities] = useState([])
   const [isLoading, setIsLoading] = useState(false)
@@ -9,6 +10,7 @@ export function useDashboardData(isAuthenticated) {
 
   useEffect(() => {
     if (!isAuthenticated) {
+      setChallenge(null)
       setChallenges([])
       setActivities([])
       setIsLoading(false)
@@ -22,30 +24,52 @@ export function useDashboardData(isAuthenticated) {
       setIsLoading(true)
       setErrorMessage('')
 
-      try {
-        const [challengesResponse, activitiesResponse] = await Promise.all([
-          api.get('/api/challenge/active'),
-          api.get('/api/activities'),
-        ])
+      const [challengeResult, challengesResult, activitiesResult] = await Promise.allSettled([
+        api.get('/api/challenge/current'),
+        api.get('/api/challenge/active'),
+        api.get('/api/activities'),
+      ])
 
-        if (!isMounted) {
-          return
-        }
+      if (!isMounted) {
+        return
+      }
 
-        setChallenges(challengesResponse.data)
-        setActivities(activitiesResponse.data)
-      } catch (error) {
-        if (!isMounted) {
-          return
-        }
+      if (challengeResult.status === 'fulfilled') {
+        setChallenge(challengeResult.value.data)
+      } else {
+        setChallenge(null)
+      }
 
+      if (challengesResult.status === 'fulfilled') {
+        setChallenges(challengesResult.value.data)
+      } else if (challengeResult.status === 'fulfilled') {
+        setChallenges([challengeResult.value.data])
+      } else {
+        setChallenges([])
+      }
+
+      if (activitiesResult.status === 'fulfilled') {
+        setActivities(activitiesResult.value.data)
+      } else {
+        setActivities([])
+      }
+
+      if (challengeResult.status === 'rejected') {
         setErrorMessage(
-          getApiErrorMessage(error, 'Nie udało się wczytać danych dashboardu Relay.'),
+          getApiErrorMessage(challengeResult.reason, 'Nie udało się wczytać danych wyzwania.'),
         )
-      } finally {
-        if (isMounted) {
-          setIsLoading(false)
-        }
+      } else if (challengesResult.status === 'rejected') {
+        setErrorMessage(
+          getApiErrorMessage(challengesResult.reason, 'Nie udało się wczytać listy wyzwań.'),
+        )
+      } else if (activitiesResult.status === 'rejected') {
+        setErrorMessage(
+          getApiErrorMessage(activitiesResult.reason, 'Nie udało się wczytać aktywności.'),
+        )
+      }
+
+      if (isMounted) {
+        setIsLoading(false)
       }
     }
 
@@ -57,10 +81,12 @@ export function useDashboardData(isAuthenticated) {
   }, [isAuthenticated])
 
   return {
+    challenge,
     challenges,
     activities,
     isLoading,
     errorMessage,
+    setChallenge,
     setChallenges,
     setActivities,
   }

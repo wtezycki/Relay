@@ -13,13 +13,15 @@ import org.springframework.http.HttpStatus;
 import org.springframework.security.oauth2.core.user.DefaultOAuth2User;
 import org.springframework.security.oauth2.core.user.OAuth2User;
 import org.springframework.web.server.ResponseStatusException;
+import pl.relay.activity.ActivityService;
 
 class UserServiceTest {
 
     @Test
     void shouldReturnCurrentUserForAuthenticatedStravaPrincipal() {
         var userRepository = mock(UserRepository.class);
-        var userService = new UserService(userRepository);
+        var activityService = mock(ActivityService.class);
+        var userService = new UserService(userRepository, activityService);
 
         var oAuth2User = createOAuth2User(Map.of("id", 12345L));
         var user = User.builder()
@@ -32,6 +34,7 @@ class UserServiceTest {
                 .build();
 
         when(userRepository.findByStravaAthleteId(12345L)).thenReturn(Optional.of(user));
+        when(activityService.calculateConsistencyStreak(5L)).thenReturn(4);
 
         var response = userService.getCurrentUser(oAuth2User);
 
@@ -41,12 +44,14 @@ class UserServiceTest {
         assertThat(response.lastName()).isEqualTo("Kowalski");
         assertThat(response.avatarUrl()).isEqualTo("https://example.com/avatar.png");
         assertThat(response.role()).isEqualTo(UserRole.ADMIN);
+        assertThat(response.consistencyStreak()).isEqualTo(4);
     }
 
     @Test
     void shouldRejectMissingAuthenticatedUser() {
         var userRepository = mock(UserRepository.class);
-        var userService = new UserService(userRepository);
+        var activityService = mock(ActivityService.class);
+        var userService = new UserService(userRepository, activityService);
 
         assertThatThrownBy(() -> userService.getCurrentUser(null))
                 .isInstanceOf(ResponseStatusException.class)
@@ -57,7 +62,8 @@ class UserServiceTest {
     @Test
     void shouldRejectAuthenticatedUserWithoutStravaId() {
         var userRepository = mock(UserRepository.class);
-        var userService = new UserService(userRepository);
+        var activityService = mock(ActivityService.class);
+        var userService = new UserService(userRepository, activityService);
 
         var oAuth2User = createOAuth2User(Map.of("firstname", "Jan"));
 

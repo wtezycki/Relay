@@ -1,12 +1,12 @@
 function SectionCard({ title, subtitle, action, children }) {
   return (
-    <section className="rounded-[2rem] border border-white/70 bg-white/80 p-6 shadow-card backdrop-blur">
-      <div className="mb-5 flex flex-col gap-3 md:flex-row md:items-center md:justify-between">
+    <section className="glass-panel p-6 sm:p-8">
+      <div className="mb-6 flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between">
         <div>
-          <p className="font-display text-xl font-bold text-ink">{title}</p>
-          {subtitle ? <p className="text-sm text-ink/70">{subtitle}</p> : null}
+          <h2 className="font-display text-2xl font-bold tracking-tight text-white">{title}</h2>
+          {subtitle ? <p className="mt-1 text-sm text-gray-400">{subtitle}</p> : null}
         </div>
-        {action}
+        {action && <div>{action}</div>}
       </div>
       {children}
     </section>
