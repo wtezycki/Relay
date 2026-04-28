@@ -8,4 +8,6 @@ public interface ActivityRepository extends JpaRepository<Activity, Long> {
     boolean existsByStravaActivityId(Long stravaActivityId);
 
     List<Activity> findAllByOrderByIdDesc();
+
+    List<Activity> findByUserIdOrderByOccurredAtDesc(Long userId);
 }

@@ -8,6 +8,7 @@ public record UserResponse(
         String firstName,
         String lastName,
         String avatarUrl,
-        UserRole role
+        UserRole role,
+        int consistencyStreak
 ) {
 }

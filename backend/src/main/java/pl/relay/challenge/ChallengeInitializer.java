@@ -19,6 +19,7 @@ public class ChallengeInitializer {
     private int defaultChallengeTargetPoints;
 
     @Bean
+    @org.springframework.core.annotation.Order(1)
     ApplicationRunner challengeInitializationRunner() {
         return arguments -> {
             if (challengeRepository.count() > 0) {

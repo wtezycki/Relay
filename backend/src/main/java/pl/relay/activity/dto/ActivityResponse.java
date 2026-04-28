@@ -13,6 +13,7 @@ public record ActivityResponse(
         String activityName,
         Instant occurredAt,
         Double distanceMeters,
-        Long movingTimeSeconds
+        Long movingTimeSeconds,
+        int userConsistencyStreak
 ) {
 }
