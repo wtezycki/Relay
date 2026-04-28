@@ -5,11 +5,15 @@ import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import java.io.IOException;
 import java.time.Instant;
+import java.util.ArrayList;
 import java.util.LinkedHashMap;
+import java.util.LinkedHashSet;
 import java.util.Map;
 import java.util.Optional;
 import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Value;
+import org.springframework.security.core.GrantedAuthority;
+import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.oauth2.client.OAuth2AuthorizedClient;
 import org.springframework.security.oauth2.client.OAuth2AuthorizedClientService;
@@ -40,6 +44,9 @@ public class CustomOAuth2UserService implements OAuth2UserService<OAuth2UserRequ
     @Value("${relay.frontend.base-url:http://localhost:5173}")
     private String frontendBaseUrl;
 
+    @Value("${relay.admin.strava-athlete-id:}")
+    private String adminStravaAthleteId;
+
     @Override
     public OAuth2User loadUser(OAuth2UserRequest userRequest) throws OAuth2AuthenticationException {
         var oauth2User = delegate.loadUser(userRequest);
@@ -47,7 +54,8 @@ public class CustomOAuth2UserService implements OAuth2UserService<OAuth2UserRequ
         if (isStravaLogin(userRequest.getClientRegistration().getRegistrationId())) {
             var attributes = getStravaAttributes(userRequest, oauth2User);
             validateStravaAthlete(attributes);
-            return new DefaultOAuth2User(oauth2User.getAuthorities(), attributes, "id");
+            var role = resolveRole(getRequiredLong(attributes, "id"));
+            return new DefaultOAuth2User(withRoleAuthority(oauth2User.getAuthorities(), role), attributes, "id");
         }
 
         return oauth2User;
@@ -107,6 +115,7 @@ public class CustomOAuth2UserService implements OAuth2UserService<OAuth2UserRequ
                 .accessToken(accessToken.getTokenValue())
                 .refreshToken(refreshToken.getTokenValue())
                 .tokenExpiresAt(getRequiredExpiresAt(accessToken))
+                .role(resolveRole(getRequiredLong(attributes, "id")))
                 .build();
     }
 
@@ -121,6 +130,7 @@ public class CustomOAuth2UserService implements OAuth2UserService<OAuth2UserRequ
         user.setAvatarUrl(getOptionalString(attributes, "profile"));
         user.setAccessToken(accessToken.getTokenValue());
         user.setTokenExpiresAt(getRequiredExpiresAt(accessToken));
+        user.setRole(resolveRole(getRequiredLong(attributes, "id")));
 
         Optional.ofNullable(refreshToken)
                 .map(OAuth2RefreshToken::getTokenValue)
@@ -149,6 +159,27 @@ public class CustomOAuth2UserService implements OAuth2UserService<OAuth2UserRequ
         });
 
         return attributes.isEmpty() ? oauth2User.getAttributes() : attributes;
+    }
+
+    private UserRole resolveRole(Long stravaAthleteId) {
+        return isAdminAthlete(stravaAthleteId) ? UserRole.ADMIN : UserRole.USER;
+    }
+
+    private boolean isAdminAthlete(Long stravaAthleteId) {
+        if (adminStravaAthleteId == null || adminStravaAthleteId.isBlank()) {
+            return false;
+        }
+
+        return adminStravaAthleteId.equals(stravaAthleteId.toString());
+    }
+
+    private java.util.Collection<? extends GrantedAuthority> withRoleAuthority(
+            java.util.Collection<? extends GrantedAuthority> existingAuthorities,
+            UserRole role
+    ) {
+        var authorities = new ArrayList<GrantedAuthority>(new LinkedHashSet<>(existingAuthorities));
+        authorities.add(new SimpleGrantedAuthority("ROLE_" + role.name()));
+        return authorities;
     }
 
     private boolean isStravaLogin(String registrationId) {

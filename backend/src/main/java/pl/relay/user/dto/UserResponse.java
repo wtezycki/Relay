@@ -1,10 +1,13 @@
 package pl.relay.user.dto;
 
+import pl.relay.user.UserRole;
+
 public record UserResponse(
         Long id,
         Long stravaAthleteId,
         String firstName,
         String lastName,
-        String avatarUrl
+        String avatarUrl,
+        UserRole role
 ) {
 }

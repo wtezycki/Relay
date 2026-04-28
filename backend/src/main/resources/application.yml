@@ -37,6 +37,8 @@ spring:
             user-name-attribute: id
 
 relay:
+  admin:
+    strava-athlete-id: ${STRAVA_ADMIN_ATHLETE_ID:}
   cors:
     allowed-origin: http://localhost:5173
   frontend:

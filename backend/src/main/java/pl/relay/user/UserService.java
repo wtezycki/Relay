@@ -30,7 +30,8 @@ public class UserService {
                 user.getStravaAthleteId(),
                 user.getFirstName(),
                 user.getLastName(),
-                user.getAvatarUrl()
+                user.getAvatarUrl(),
+                user.getRole() == null ? UserRole.USER : user.getRole()
         );
     }
 

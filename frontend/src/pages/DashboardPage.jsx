@@ -9,7 +9,7 @@ import { useDashboardData } from '../hooks/useDashboardData.js'
 import api from '../services/api.js'
 
 function DashboardPage() {
-  const { user, isLoading: isAuthLoading, isAuthenticated, loginWithStrava, logout } = useAuth()
+  const { user, isLoading: isAuthLoading, isAuthenticated, isAdmin, loginWithStrava, logout } = useAuth()
   const { challenge, activities, isLoading, errorMessage, setActivities, setChallenge } =
     useDashboardData(isAuthenticated)
   const [isSyncing, setIsSyncing] = useState(false)
@@ -85,7 +85,7 @@ function DashboardPage() {
         <div className="grid gap-6 lg:grid-cols-[1.1fr_0.9fr]">
           <SectionCard
             action={
-              isAuthenticated ? (
+              isAuthenticated && isAdmin ? (
                 <button
                   className="inline-flex items-center gap-2 rounded-2xl border border-pine/15 bg-pine px-4 py-2 text-sm font-semibold text-white transition hover:bg-pine/90 disabled:cursor-not-allowed disabled:opacity-60"
                   disabled={isSyncing}
@@ -121,6 +121,7 @@ function DashboardPage() {
                     {user.firstName} {user.lastName}
                   </p>
                   <p className="text-sm text-ink/65">Atleta Stravy #{user.stravaAthleteId}</p>
+                  <p className="text-sm text-ink/65">Rola: {user.role === 'ADMIN' ? 'Administrator' : 'Użytkownik'}</p>
                 </div>
               </div>
             ) : (
@@ -158,8 +159,10 @@ function DashboardPage() {
           subtitle="Szybka akcja administracyjna do utworzenia kolejnego firmowego celu."
           title="Utwórz wyzwanie"
         >
-          {isAuthenticated ? (
+          {isAuthenticated && isAdmin ? (
             <CreateChallengeForm onCreated={setChallenge} />
+          ) : isAuthenticated ? (
+            <p className="text-sm text-ink/70">Tylko administrator może tworzyć i edytować wyzwania.</p>
           ) : (
             <p className="text-sm text-ink/70">Zaloguj się, zanim utworzysz wyzwanie.</p>
           )}
@@ -192,7 +195,7 @@ function DashboardPage() {
           <InfoTile
             icon={RefreshCcw}
             label="Endpoint synchronizacji"
-            value="POST /api/admin/sync"
+            value={isAdmin ? 'POST /api/admin/sync' : 'Dostępne tylko dla administratora'}
           />
         </section>
       </div>
