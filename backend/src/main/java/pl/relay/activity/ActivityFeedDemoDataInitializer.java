@@ -11,10 +11,12 @@ import org.springframework.stereotype.Component;
 @Component
 @RequiredArgsConstructor
 @ConditionalOnProperty(name = "relay.dev.seed-demo-activities", havingValue = "true", matchIfMissing = true)
+@org.springframework.core.annotation.Order(2)
 public class ActivityFeedDemoDataInitializer implements CommandLineRunner {
 
     private final ActivityRepository activityRepository;
     private final ActivityNormalizerService activityNormalizerService;
+    private final pl.relay.challenge.ChallengeService challengeService;
 
     @Override
     public void run(String... args) {
@@ -29,7 +31,10 @@ public class ActivityFeedDemoDataInitializer implements CommandLineRunner {
 
         demoActivities.stream()
                 .filter(activity -> !activityRepository.existsByStravaActivityId(activity.getStravaActivityId()))
-                .forEach(activityRepository::save);
+                .forEach(activity -> {
+                    activityRepository.save(activity);
+                    challengeService.addPointsToActiveChallenge(activity.getTeamPoints());
+                });
     }
 
     private Activity demoActivity(

@@ -28,11 +28,10 @@ public class ChallengeService {
     }
 
     @Transactional(readOnly = true)
-    public ChallengeResponse getCurrentChallenge() {
-        var challenge = challengeRepository.findByIsActiveTrue()
-                .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "Active challenge not found."));
-
-        return mapToResponse(challenge);
+    public List<ChallengeResponse> getActiveChallenges() {
+        return challengeRepository.findAllByIsActiveTrue().stream()
+                .map(this::mapToResponse)
+                .toList();
     }
 
     @Transactional(readOnly = true)
@@ -46,10 +45,9 @@ public class ChallengeService {
             return;
         }
 
-        challengeRepository.findByIsActiveTrue().ifPresent(challenge -> {
-            challenge.setCurrentPoints(challenge.getCurrentPoints() + pointsToAdd);
-            challengeRepository.save(challenge);
-        });
+        var activeChallenges = challengeRepository.findAllByIsActiveTrue();
+        activeChallenges.forEach(challenge -> challenge.setCurrentPoints(challenge.getCurrentPoints() + pointsToAdd));
+        challengeRepository.saveAll(activeChallenges);
     }
 
     @Transactional
@@ -57,10 +55,6 @@ public class ChallengeService {
         var challengeName = normalizeName(request.name());
         var targetPoints = requirePositiveTargetPoints(request.targetPoints());
         var shouldBeActive = request.isActive() == null || request.isActive();
-
-        if (shouldBeActive) {
-            deactivateActiveChallenge(null);
-        }
 
         var challenge = Challenge.builder()
                 .name(challengeName)
@@ -86,7 +80,6 @@ public class ChallengeService {
             challenge.setCurrentPoints(requireNonNegativeCurrentPoints(request.currentPoints()));
         }
         if (Boolean.TRUE.equals(request.isActive())) {
-            deactivateActiveChallenge(challenge.getId());
             challenge.setActive(true);
         } else if (Boolean.FALSE.equals(request.isActive())) {
             challenge.setActive(false);
@@ -98,7 +91,6 @@ public class ChallengeService {
     @Transactional
     public ChallengeResponse activateChallenge(Long challengeId) {
         var challenge = getRequiredChallenge(challengeId);
-        deactivateActiveChallenge(challenge.getId());
         challenge.setActive(true);
         return mapToResponse(challengeRepository.save(challenge));
     }
@@ -153,16 +145,5 @@ public class ChallengeService {
     private Challenge getRequiredChallenge(Long challengeId) {
         return challengeRepository.findById(challengeId)
                 .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "Challenge not found."));
-    }
-
-    private void deactivateActiveChallenge(Long challengeToKeepActiveId) {
-        challengeRepository.findByIsActiveTrue().ifPresent(activeChallenge -> {
-            if (challengeToKeepActiveId != null && challengeToKeepActiveId.equals(activeChallenge.getId())) {
-                return;
-            }
-
-            activeChallenge.setActive(false);
-            challengeRepository.save(activeChallenge);
-        });
     }
 }
