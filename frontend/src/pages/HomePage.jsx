@@ -9,7 +9,7 @@ import Layout from '../components/Layout.jsx'
 
 function HomePage() {
   const { user, isLoading: isAuthLoading, isAuthenticated, loginWithStrava } = useAuth()
-  const { activities, isLoading } = useDashboardData(isAuthenticated)
+  const { activities, isLoading, setActivities } = useDashboardData(isAuthenticated)
   const [showConfetti, setShowConfetti] = useState(false)
 
   const DAILY_TARGET = 50
@@ -110,7 +110,7 @@ function HomePage() {
               Ładowanie feedu aktywności...
             </div>
           ) : (
-            <ActivityList activities={activities} />
+            <ActivityList activities={activities} setActivities={setActivities} user={user} />
           )}
         </SectionCard>
       </div>

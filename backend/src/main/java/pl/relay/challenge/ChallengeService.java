@@ -35,6 +35,18 @@ public class ChallengeService {
     }
 
     @Transactional(readOnly = true)
+    public ChallengeResponse getCurrentChallenge() {
+        return challengeRepository.findAllByIsActiveTrue().stream()
+                .sorted((left, right) -> Long.compare(
+                        right.getId() == null ? 0L : right.getId(),
+                        left.getId() == null ? 0L : left.getId()
+                ))
+                .findFirst()
+                .map(this::mapToResponse)
+                .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "Active challenge not found."));
+    }
+
+    @Transactional(readOnly = true)
     public ChallengeResponse getChallengeById(Long challengeId) {
         return mapToResponse(getRequiredChallenge(challengeId));
     }

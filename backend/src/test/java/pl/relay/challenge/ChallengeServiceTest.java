@@ -5,7 +5,6 @@ import static org.assertj.core.api.Assertions.assertThatThrownBy;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.never;
-import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
@@ -62,7 +61,7 @@ class ChallengeServiceTest {
                 .isActive(true)
                 .build();
 
-        when(challengeRepository.findByIsActiveTrue()).thenReturn(Optional.of(challenge));
+        when(challengeRepository.findAllByIsActiveTrue()).thenReturn(List.of(challenge));
 
         var response = challengeService.getCurrentChallenge();
 
@@ -87,40 +86,32 @@ class ChallengeServiceTest {
                 .isActive(true)
                 .build();
 
-        when(challengeRepository.findByIsActiveTrue()).thenReturn(Optional.of(challenge));
+        when(challengeRepository.findAllByIsActiveTrue()).thenReturn(List.of(challenge));
 
         challengeService.addPointsToActiveChallenge(8);
 
-        var savedChallenge = ArgumentCaptor.forClass(Challenge.class);
-        verify(challengeRepository).save(savedChallenge.capture());
-        assertThat(savedChallenge.getValue().getCurrentPoints()).isEqualTo(128);
+        var savedChallenges = ArgumentCaptor.forClass(List.class);
+        verify(challengeRepository).saveAll(savedChallenges.capture());
+        var persistedChallenges = (List<Challenge>) savedChallenges.getValue();
+        assertThat(persistedChallenges).hasSize(1);
+        assertThat(persistedChallenges.get(0).getCurrentPoints()).isEqualTo(128);
     }
 
     @Test
-    void shouldCreateNewActiveChallengeAndDeactivatePreviousOne() {
+    void shouldCreateNewActiveChallenge() {
         var challengeRepository = mock(ChallengeRepository.class);
         var challengeService = new ChallengeService(challengeRepository);
 
-        var existingChallenge = Challenge.builder()
-                .id(1L)
-                .name("Run to Paris")
-                .targetPoints(500)
-                .currentPoints(50)
-                .isActive(true)
-                .build();
-
-        when(challengeRepository.findByIsActiveTrue()).thenReturn(Optional.of(existingChallenge));
         when(challengeRepository.save(any(Challenge.class))).thenAnswer(invocation -> invocation.getArgument(0));
 
         var response = challengeService.createChallenge(new ChallengeCreateRequest("Run to Rome", 1_500, true));
 
-        assertThat(existingChallenge.isActive()).isFalse();
         assertThat(response.name()).isEqualTo("Run to Rome");
         assertThat(response.targetPoints()).isEqualTo(1_500);
         assertThat(response.currentPoints()).isZero();
         assertThat(response.isActive()).isTrue();
         assertThat(response.progressPercentage()).isZero();
-        verify(challengeRepository, times(2)).save(any(Challenge.class));
+        verify(challengeRepository).save(any(Challenge.class));
     }
 
     @Test
@@ -152,13 +143,6 @@ class ChallengeServiceTest {
         var challengeRepository = mock(ChallengeRepository.class);
         var challengeService = new ChallengeService(challengeRepository);
 
-        var existingActiveChallenge = Challenge.builder()
-                .id(1L)
-                .name("Run to Paris")
-                .targetPoints(500)
-                .currentPoints(50)
-                .isActive(true)
-                .build();
         var challengeToActivate = Challenge.builder()
                 .id(2L)
                 .name("Run to Rome")
@@ -168,12 +152,10 @@ class ChallengeServiceTest {
                 .build();
 
         when(challengeRepository.findById(2L)).thenReturn(Optional.of(challengeToActivate));
-        when(challengeRepository.findByIsActiveTrue()).thenReturn(Optional.of(existingActiveChallenge));
         when(challengeRepository.save(any(Challenge.class))).thenAnswer(invocation -> invocation.getArgument(0));
 
         var response = challengeService.activateChallenge(2L);
 
-        assertThat(existingActiveChallenge.isActive()).isFalse();
         assertThat(response.id()).isEqualTo(2L);
         assertThat(response.isActive()).isTrue();
     }
@@ -203,7 +185,7 @@ class ChallengeServiceTest {
         var challengeRepository = mock(ChallengeRepository.class);
         var challengeService = new ChallengeService(challengeRepository);
 
-        when(challengeRepository.findByIsActiveTrue()).thenReturn(Optional.empty());
+        when(challengeRepository.findAllByIsActiveTrue()).thenReturn(List.of());
 
         assertThatThrownBy(challengeService::getCurrentChallenge)
                 .isInstanceOf(ResponseStatusException.class)
@@ -229,6 +211,6 @@ class ChallengeServiceTest {
 
         challengeService.addPointsToActiveChallenge(0);
 
-        verify(challengeRepository, never()).findByIsActiveTrue();
+        verify(challengeRepository, never()).findAllByIsActiveTrue();
     }
 }

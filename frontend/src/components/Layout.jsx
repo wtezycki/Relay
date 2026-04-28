@@ -1,5 +1,5 @@
 import { Link, useLocation } from 'react-router-dom'
-import { Activity, Target, BarChart2, Shield, LogOut } from 'lucide-react'
+import { Activity, Target, BarChart2, Shield, LogOut, Trophy } from 'lucide-react'
 import { useAuth } from '../hooks/useAuth.js'
 
 function Layout({ children }) {
@@ -9,6 +9,7 @@ function Layout({ children }) {
   const navLinks = [
     { name: 'Feed', path: '/', icon: Activity },
     { name: 'Wyzwania', path: '/challenges', icon: Target },
+    { name: 'Ranking', path: '/leaderboard', icon: Trophy },
     { name: 'Statystyki', path: '/stats', icon: BarChart2 },
   ]
 

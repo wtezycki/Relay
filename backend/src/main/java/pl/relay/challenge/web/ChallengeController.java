@@ -33,6 +33,11 @@ public class ChallengeController {
         return challengeService.getActiveChallenges();
     }
 
+    @GetMapping("/current")
+    public ChallengeResponse getCurrentChallenge() {
+        return challengeService.getCurrentChallenge();
+    }
+
     @GetMapping("/{challengeId}")
     public ChallengeResponse getChallengeById(@PathVariable Long challengeId) {
         return challengeService.getChallengeById(challengeId);

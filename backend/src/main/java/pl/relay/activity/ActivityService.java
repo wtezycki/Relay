@@ -3,6 +3,7 @@ package pl.relay.activity;
 import java.time.LocalDate;
 import java.time.ZoneOffset;
 import java.util.Comparator;
+import java.util.LinkedHashSet;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
@@ -10,6 +11,8 @@ import java.util.stream.Collectors;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+import org.springframework.http.HttpStatus;
+import org.springframework.web.server.ResponseStatusException;
 import pl.relay.activity.dto.ActivityResponse;
 
 @Service
@@ -79,6 +82,22 @@ public class ActivityService {
         return streak;
     }
 
+    @Transactional
+    public ActivityResponse toggleLike(Long activityId, Long userId) {
+        var activity = activityRepository.findById(activityId)
+            .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "Activity not found"));
+        
+        if (activity.getLikedUserIds().contains(userId)) {
+            activity.getLikedUserIds().remove(userId);
+        } else {
+            activity.getLikedUserIds().add(userId);
+        }
+        
+        var savedActivity = activityRepository.save(activity);
+        int streak = calculateConsistencyStreak(savedActivity.getUserId());
+        return mapToResponse(savedActivity, streak);
+    }
+
     private ActivityResponse mapToResponse(Activity activity, int streak) {
         return new ActivityResponse(
                 activity.getId(),
@@ -92,7 +111,8 @@ public class ActivityService {
                 activity.getOccurredAt(),
                 activity.getDistanceMeters(),
                 activity.getMovingTimeSeconds(),
-                streak
+                streak,
+                new LinkedHashSet<>(activity.getLikedUserIds())
         );
     }
 }
