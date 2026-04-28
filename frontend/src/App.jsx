@@ -4,6 +4,7 @@ import ChallengesPage from './pages/ChallengesPage.jsx'
 import StatsPage from './pages/StatsPage.jsx'
 import AdminPage from './pages/AdminPage.jsx'
 import LeaderboardPage from './pages/LeaderboardPage.jsx'
+import ProfilePage from './pages/ProfilePage.jsx'
 
 function App() {
   return (
@@ -12,6 +13,8 @@ function App() {
       <Route path="/challenges" element={<ChallengesPage />} />
       <Route path="/leaderboard" element={<LeaderboardPage />} />
       <Route path="/stats" element={<StatsPage />} />
+      <Route path="/profile" element={<ProfilePage />} />
+      <Route path="/profile/:userId" element={<ProfilePage />} />
       <Route path="/admin" element={<AdminPage />} />
       <Route path="*" element={<Navigate to="/" replace />} />
     </Routes>
