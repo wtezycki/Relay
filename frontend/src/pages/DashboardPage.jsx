@@ -6,16 +6,18 @@ import ProgressBar from '../components/ProgressBar.jsx'
 import SectionCard from '../components/SectionCard.jsx'
 import { useAuth } from '../hooks/useAuth.js'
 import { useDashboardData } from '../hooks/useDashboardData.js'
-import api from '../services/api.js'
+import api, { getApiErrorMessage } from '../services/api.js'
 
 function DashboardPage() {
   const { user, isLoading: isAuthLoading, isAuthenticated, isAdmin, loginWithStrava, logout } = useAuth()
   const { challenge, activities, isLoading, errorMessage, setActivities, setChallenge } =
     useDashboardData(isAuthenticated)
   const [isSyncing, setIsSyncing] = useState(false)
+  const [syncMessage, setSyncMessage] = useState('')
 
   async function handleManualSync() {
     setIsSyncing(true)
+    setSyncMessage('')
 
     try {
       await api.post('/api/admin/sync')
@@ -27,6 +29,9 @@ function DashboardPage() {
 
       setChallenge(challengeResponse.data)
       setActivities(activitiesResponse.data)
+      setSyncMessage('Synchronizacja zakończona.')
+    } catch (error) {
+      setSyncMessage(getApiErrorMessage(error, 'Nie udało się uruchomić synchronizacji.'))
     } finally {
       setIsSyncing(false)
     }
@@ -103,26 +108,29 @@ function DashboardPage() {
             {isAuthLoading ? (
               <p className="text-sm text-ink/70">Sprawdzanie sesji Spring Security...</p>
             ) : isAuthenticated ? (
-              <div className="flex items-center gap-4 rounded-2xl bg-pine/5 p-4">
-                {user.avatarUrl ? (
-                  <img
-                    alt={`${user.firstName} ${user.lastName}`}
-                    className="h-12 w-12 rounded-full object-cover"
-                    src={user.avatarUrl}
-                  />
-                ) : (
-                  <div className="grid h-12 w-12 place-items-center rounded-full bg-pine text-white">
-                    <UserCircle2 className="h-7 w-7" />
+              <div className="space-y-3">
+                <div className="flex items-center gap-4 rounded-2xl bg-pine/5 p-4">
+                  {user.avatarUrl ? (
+                    <img
+                      alt={`${user.firstName} ${user.lastName}`}
+                      className="h-12 w-12 rounded-full object-cover"
+                      src={user.avatarUrl}
+                    />
+                  ) : (
+                    <div className="grid h-12 w-12 place-items-center rounded-full bg-pine text-white">
+                      <UserCircle2 className="h-7 w-7" />
+                    </div>
+                  )}
+                  <div>
+                    <p className="font-semibold text-ink">{`Cześć, ${user.firstName}`}</p>
+                    <p className="text-sm text-ink/65">
+                      {user.firstName} {user.lastName}
+                    </p>
+                    <p className="text-sm text-ink/65">Atleta Stravy #{user.stravaAthleteId}</p>
+                    <p className="text-sm text-ink/65">Rola: {user.role === 'ADMIN' ? 'Administrator' : 'Użytkownik'}</p>
                   </div>
-                )}
-                <div>
-                  <p className="font-semibold text-ink">{`Cześć, ${user.firstName}`}</p>
-                  <p className="text-sm text-ink/65">
-                    {user.firstName} {user.lastName}
-                  </p>
-                  <p className="text-sm text-ink/65">Atleta Stravy #{user.stravaAthleteId}</p>
-                  <p className="text-sm text-ink/65">Rola: {user.role === 'ADMIN' ? 'Administrator' : 'Użytkownik'}</p>
                 </div>
+                {syncMessage ? <p className="text-sm text-ink/70">{syncMessage}</p> : null}
               </div>
             ) : (
               <p className="text-sm text-ink/70">Brak aktywnej sesji. Zaloguj się przez Stravę, aby korzystać z chronionych endpointów API.</p>

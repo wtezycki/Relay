@@ -1,5 +1,5 @@
 import { useState } from 'react'
-import api from '../services/api.js'
+import api, { getApiErrorMessage } from '../services/api.js'
 
 const INITIAL_FORM = {
   name: '',
@@ -28,7 +28,7 @@ function CreateChallengeForm({ onCreated }) {
       setMessage('Wyzwanie zostało utworzone.')
       onCreated?.(response.data)
     } catch (error) {
-      setMessage(error.response?.data?.message || 'Nie udało się utworzyć wyzwania.')
+      setMessage(getApiErrorMessage(error, 'Nie udało się utworzyć wyzwania.'))
     } finally {
       setIsSaving(false)
     }

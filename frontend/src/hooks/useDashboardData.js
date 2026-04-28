@@ -1,5 +1,5 @@
 import { useEffect, useState } from 'react'
-import api from '../services/api.js'
+import api, { getApiErrorMessage } from '../services/api.js'
 
 export function useDashboardData(isAuthenticated) {
   const [challenge, setChallenge] = useState(null)
@@ -39,11 +39,9 @@ export function useDashboardData(isAuthenticated) {
           return
         }
 
-        if (error.response?.status === 404) {
-          setErrorMessage('Nie skonfigurowano jeszcze aktywnego wyzwania.')
-        } else {
-          setErrorMessage('Nie udało się wczytać danych dashboardu Relay.')
-        }
+        setErrorMessage(
+          getApiErrorMessage(error, 'Nie udało się wczytać danych dashboardu Relay.'),
+        )
       } finally {
         if (isMounted) {
           setIsLoading(false)
