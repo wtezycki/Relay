@@ -137,20 +137,20 @@ function ChallengeAdminPanel({ onCurrentChallengeChange }) {
 
   return (
     <div className="space-y-6">
-      <div className="rounded-[1.75rem] border border-pine/10 bg-pine/5 p-5">
-        <p className="mb-4 text-sm font-semibold uppercase tracking-[0.18em] text-pine/75">
+      <div className="glass-card p-5 border-dashed border-white/20">
+        <p className="mb-4 text-xs font-bold uppercase tracking-widest text-gray-400">
           Nowe wyzwanie
         </p>
         <CreateChallengeForm onCreated={handleCreate} />
       </div>
 
-      <div className="space-y-3">
+      <div className="space-y-4">
         <div className="flex items-center justify-between gap-3">
-          <p className="text-sm font-semibold uppercase tracking-[0.18em] text-ink/55">
+          <p className="text-xs font-bold uppercase tracking-widest text-gray-400">
             Wszystkie wyzwania
           </p>
           <button
-            className="rounded-full border border-pine/15 px-4 py-2 text-sm font-semibold text-pine transition hover:bg-pine/5"
+            className="btn-secondary text-sm py-2 px-4"
             onClick={loadChallenges}
             type="button"
           >
@@ -159,36 +159,36 @@ function ChallengeAdminPanel({ onCurrentChallengeChange }) {
         </div>
 
         {message ? (
-          <div className="rounded-2xl bg-white/70 px-4 py-3 text-sm text-ink/75">
+          <div className="rounded-xl bg-white/10 border border-white/20 px-4 py-3 text-sm text-gray-200">
             {message}
           </div>
         ) : null}
 
         {isLoading ? (
-          <div className="rounded-2xl border border-dashed border-pine/20 bg-pine/5 p-5 text-sm text-ink/70">
+          <div className="rounded-xl border border-dashed border-white/10 bg-white/5 p-5 text-sm text-gray-400 text-center animate-pulse">
             Ładowanie listy wyzwań...
           </div>
         ) : !challenges.length ? (
-          <div className="rounded-2xl border border-dashed border-pine/20 bg-pine/5 p-5 text-sm text-ink/70">
+          <div className="rounded-xl border border-dashed border-white/10 bg-white/5 p-5 text-sm text-gray-400 text-center">
             Nie ma jeszcze żadnych wyzwań.
           </div>
         ) : (
-          <div className="space-y-3">
+          <div className="space-y-4">
             {challenges.map((challenge) => {
               const isEditing = editState.challengeId === challenge.id
 
               return (
                 <article
                   key={challenge.id}
-                  className="rounded-[1.75rem] border border-pine/10 bg-white/70 p-5 shadow-card"
+                  className="glass-card p-5"
                 >
                   {isEditing ? (
                     <form className="space-y-4" onSubmit={handleUpdate}>
                       <div className="grid gap-4 md:grid-cols-3">
                         <label className="grid gap-2">
-                          <span className="text-sm font-medium text-ink/75">Nazwa</span>
+                          <span className="text-sm font-medium text-gray-400">Nazwa</span>
                           <input
-                            className="rounded-2xl border border-pine/20 bg-white px-4 py-3 outline-none transition focus:border-ember"
+                            className="rounded-xl border border-white/10 bg-surface-hover px-4 py-3 text-white outline-none transition focus:border-primary focus:ring-1 focus:ring-primary"
                             onChange={(event) =>
                               setEditState((current) => ({ ...current, name: event.target.value }))
                             }
@@ -197,9 +197,9 @@ function ChallengeAdminPanel({ onCurrentChallengeChange }) {
                           />
                         </label>
                         <label className="grid gap-2">
-                          <span className="text-sm font-medium text-ink/75">Target punktów</span>
+                          <span className="text-sm font-medium text-gray-400">Target punktów</span>
                           <input
-                            className="rounded-2xl border border-pine/20 bg-white px-4 py-3 outline-none transition focus:border-ember"
+                            className="rounded-xl border border-white/10 bg-surface-hover px-4 py-3 text-white outline-none transition focus:border-primary focus:ring-1 focus:ring-primary"
                             min="1"
                             onChange={(event) =>
                               setEditState((current) => ({ ...current, targetPoints: event.target.value }))
@@ -210,9 +210,9 @@ function ChallengeAdminPanel({ onCurrentChallengeChange }) {
                           />
                         </label>
                         <label className="grid gap-2">
-                          <span className="text-sm font-medium text-ink/75">Aktualne punkty</span>
+                          <span className="text-sm font-medium text-gray-400">Aktualne punkty</span>
                           <input
-                            className="rounded-2xl border border-pine/20 bg-white px-4 py-3 outline-none transition focus:border-ember"
+                            className="rounded-xl border border-white/10 bg-surface-hover px-4 py-3 text-white outline-none transition focus:border-primary focus:ring-1 focus:ring-primary"
                             min="0"
                             onChange={(event) =>
                               setEditState((current) => ({ ...current, currentPoints: event.target.value }))
@@ -223,19 +223,20 @@ function ChallengeAdminPanel({ onCurrentChallengeChange }) {
                           />
                         </label>
                       </div>
-                      <label className="inline-flex items-center gap-2 text-sm text-ink/75">
+                      <label className="inline-flex items-center gap-3 text-sm text-gray-300 cursor-pointer">
                         <input
                           checked={editState.isActive}
                           onChange={(event) =>
                             setEditState((current) => ({ ...current, isActive: event.target.checked }))
                           }
                           type="checkbox"
+                          className="w-5 h-5 rounded border-white/20 bg-surface-hover text-primary focus:ring-primary focus:ring-offset-dark"
                         />
                         Ustaw jako aktywne
                       </label>
                       <div className="flex flex-wrap gap-3">
                         <button
-                          className="inline-flex items-center gap-2 rounded-2xl bg-pine px-4 py-2 text-sm font-semibold text-white transition hover:bg-pine/90 disabled:cursor-not-allowed disabled:opacity-60"
+                          className="btn-primary py-2 text-sm"
                           disabled={busyAction === `update-${challenge.id}`}
                           type="submit"
                         >
@@ -243,7 +244,7 @@ function ChallengeAdminPanel({ onCurrentChallengeChange }) {
                           Zapisz
                         </button>
                         <button
-                          className="inline-flex items-center gap-2 rounded-2xl border border-pine/15 px-4 py-2 text-sm font-semibold text-ink transition hover:bg-pine/5"
+                          className="btn-secondary py-2 text-sm"
                           onClick={cancelEditing}
                           type="button"
                         >
@@ -256,26 +257,26 @@ function ChallengeAdminPanel({ onCurrentChallengeChange }) {
                     <div className="flex flex-col gap-4 lg:flex-row lg:items-center lg:justify-between">
                       <div className="space-y-2">
                         <div className="flex flex-wrap items-center gap-3">
-                          <p className="font-display text-2xl font-bold text-ink">{challenge.name}</p>
+                          <p className="font-display text-xl font-bold text-white">{challenge.name}</p>
                           {challenge.isActive ? (
-                            <span className="rounded-full bg-ember/10 px-3 py-1 text-xs font-semibold uppercase tracking-[0.16em] text-ember">
+                            <span className="rounded-full bg-primary/20 px-3 py-1 text-[10px] font-bold uppercase tracking-widest text-primary border border-primary/20">
                               Aktywne
                             </span>
                           ) : (
-                            <span className="rounded-full bg-pine/10 px-3 py-1 text-xs font-semibold uppercase tracking-[0.16em] text-pine/70">
+                            <span className="rounded-full bg-white/5 px-3 py-1 text-[10px] font-bold uppercase tracking-widest text-gray-500 border border-white/10">
                               Nieaktywne
                             </span>
                           )}
                         </div>
-                        <p className="text-sm text-ink/65">
-                          {challenge.currentPoints} / {challenge.targetPoints} punktów · {challenge.progressPercentage.toFixed(1)}%
+                        <p className="text-sm text-gray-400 font-medium">
+                          {challenge.currentPoints} <span className="opacity-50">/</span> {challenge.targetPoints} punktów <span className="mx-2">•</span> <span className="text-white">{challenge.progressPercentage.toFixed(1)}%</span>
                         </p>
                       </div>
 
                       <div className="flex flex-wrap gap-3">
                         {!challenge.isActive ? (
                           <button
-                            className="rounded-2xl bg-pine px-4 py-2 text-sm font-semibold text-white transition hover:bg-pine/90 disabled:cursor-not-allowed disabled:opacity-60"
+                            className="btn-secondary py-2 text-sm hover:bg-primary hover:border-primary hover:text-white"
                             disabled={busyAction === `activate-${challenge.id}`}
                             onClick={() => handleActivate(challenge.id)}
                             type="button"
@@ -284,7 +285,7 @@ function ChallengeAdminPanel({ onCurrentChallengeChange }) {
                           </button>
                         ) : null}
                         <button
-                          className="inline-flex items-center gap-2 rounded-2xl border border-pine/15 px-4 py-2 text-sm font-semibold text-ink transition hover:bg-pine/5"
+                          className="btn-secondary py-2 text-sm"
                           onClick={() => startEditing(challenge)}
                           type="button"
                         >
@@ -292,7 +293,7 @@ function ChallengeAdminPanel({ onCurrentChallengeChange }) {
                           Edytuj
                         </button>
                         <button
-                          className="inline-flex items-center gap-2 rounded-2xl border border-red-200 px-4 py-2 text-sm font-semibold text-red-700 transition hover:bg-red-50 disabled:cursor-not-allowed disabled:opacity-60"
+                          className="btn-secondary py-2 text-sm hover:bg-red-500/20 hover:text-red-400 hover:border-red-500/30"
                           disabled={busyAction === `delete-${challenge.id}`}
                           onClick={() => handleDelete(challenge.id)}
                           type="button"

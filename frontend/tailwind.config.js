@@ -1,22 +1,32 @@
 /** @type {import('tailwindcss').Config} */
 export default {
   content: ['./index.html', './src/**/*.{js,jsx}'],
+  darkMode: 'class',
   theme: {
     extend: {
       colors: {
-        ember: '#d95d39',
-        pine: '#204b57',
-        cream: '#f7f1e3',
-        ink: '#1f2933',
-        moss: '#5b7c64',
+        dark: '#09090b',
+        surface: '#18181b',
+        'surface-hover': '#27272a',
+        primary: '#ff5722',
+        'primary-glow': 'rgba(255, 87, 34, 0.4)',
+        secondary: '#0ea5e9',
+        accent: '#f59e0b',
       },
       fontFamily: {
-        sans: ['"IBM Plex Sans"', 'system-ui', 'sans-serif'],
-        display: ['"Space Grotesk"', 'system-ui', 'sans-serif'],
+        sans: ['Inter', 'system-ui', 'sans-serif'],
+        display: ['Outfit', 'system-ui', 'sans-serif'],
       },
       boxShadow: {
-        card: '0 20px 45px rgba(31, 41, 51, 0.12)',
+        glass: '0 4px 30px rgba(0, 0, 0, 0.1)',
+        glow: '0 0 20px rgba(255, 87, 34, 0.3)',
       },
+      backgroundImage: {
+        'glass-gradient': 'linear-gradient(135deg, rgba(255, 255, 255, 0.05) 0%, rgba(255, 255, 255, 0.01) 100%)',
+      },
+      animation: {
+        'pulse-slow': 'pulse 4s cubic-bezier(0.4, 0, 0.6, 1) infinite',
+      }
     },
   },
   plugins: [],

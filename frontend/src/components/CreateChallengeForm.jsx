@@ -37,9 +37,9 @@ function CreateChallengeForm({ onCreated }) {
   return (
     <form className="grid gap-4 md:grid-cols-[1.5fr_1fr_auto]" onSubmit={handleSubmit}>
       <label className="grid gap-2">
-        <span className="text-sm font-medium text-ink/80">Nazwa celu</span>
+        <span className="text-sm font-medium text-gray-400">Nazwa celu</span>
         <input
-          className="rounded-2xl border border-pine/20 bg-white px-4 py-3 outline-none transition focus:border-ember"
+          className="rounded-xl border border-white/10 bg-surface-hover px-4 py-3 text-white outline-none transition focus:border-primary focus:ring-1 focus:ring-primary"
           onChange={(event) => setFormState((current) => ({ ...current, name: event.target.value }))}
           placeholder="Bieg do Tokio"
           required
@@ -47,9 +47,9 @@ function CreateChallengeForm({ onCreated }) {
         />
       </label>
       <label className="grid gap-2">
-        <span className="text-sm font-medium text-ink/80">Docelowe punkty</span>
+        <span className="text-sm font-medium text-gray-400">Docelowe punkty</span>
         <input
-          className="rounded-2xl border border-pine/20 bg-white px-4 py-3 outline-none transition focus:border-ember"
+          className="rounded-xl border border-white/10 bg-surface-hover px-4 py-3 text-white outline-none transition focus:border-primary focus:ring-1 focus:ring-primary"
           min="1"
           onChange={(event) => setFormState((current) => ({ ...current, targetPoints: event.target.value }))}
           required
@@ -58,13 +58,13 @@ function CreateChallengeForm({ onCreated }) {
         />
       </label>
       <button
-        className="mt-auto rounded-2xl bg-pine px-5 py-3 font-semibold text-white transition hover:bg-pine/90 disabled:cursor-not-allowed disabled:opacity-60"
+        className="btn-primary mt-auto md:mb-[2px]"
         disabled={isSaving}
         type="submit"
       >
         {isSaving ? 'Zapisywanie...' : 'Utwórz cel'}
       </button>
-      {message ? <p className="md:col-span-3 text-sm text-ink/70">{message}</p> : null}
+      {message ? <p className="md:col-span-3 text-sm text-gray-400">{message}</p> : null}
     </form>
   )
 }
