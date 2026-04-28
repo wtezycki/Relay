@@ -1,7 +1,7 @@
 import { Activity, Flag, LogIn, RefreshCcw, UserCircle2 } from 'lucide-react'
 import { useState } from 'react'
 import ActivityList from '../components/ActivityList.jsx'
-import CreateChallengeForm from '../components/CreateChallengeForm.jsx'
+import ChallengeAdminPanel from '../components/ChallengeAdminPanel.jsx'
 import ProgressBar from '../components/ProgressBar.jsx'
 import SectionCard from '../components/SectionCard.jsx'
 import { useAuth } from '../hooks/useAuth.js'
@@ -164,11 +164,11 @@ function DashboardPage() {
         </div>
 
         <SectionCard
-          subtitle="Szybka akcja administracyjna do utworzenia kolejnego firmowego celu."
-          title="Utwórz wyzwanie"
+          subtitle="Panel administratora do tworzenia, edycji, aktywacji i usuwania wyzwań."
+          title="Zarządzanie wyzwaniami"
         >
           {isAuthenticated && isAdmin ? (
-            <CreateChallengeForm onCreated={setChallenge} />
+            <ChallengeAdminPanel onCurrentChallengeChange={setChallenge} />
           ) : isAuthenticated ? (
             <p className="text-sm text-ink/70">Tylko administrator może tworzyć i edytować wyzwania.</p>
           ) : (

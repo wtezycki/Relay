@@ -26,7 +26,7 @@ function CreateChallengeForm({ onCreated }) {
 
       setFormState(INITIAL_FORM)
       setMessage('Wyzwanie zostało utworzone.')
-      onCreated?.(response.data)
+      await onCreated?.(response.data)
     } catch (error) {
       setMessage(getApiErrorMessage(error, 'Nie udało się utworzyć wyzwania.'))
     } finally {

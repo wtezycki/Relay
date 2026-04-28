@@ -1,5 +1,6 @@
 package pl.relay.activity;
 
+import java.util.Comparator;
 import java.util.List;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
@@ -14,7 +15,10 @@ public class ActivityService {
 
     @Transactional(readOnly = true)
     public List<ActivityResponse> getActivities() {
-        return activityRepository.findAllByOrderByIdDesc().stream()
+        return activityRepository.findAll().stream()
+                .sorted(Comparator
+                        .comparing(Activity::getOccurredAt, Comparator.nullsLast(Comparator.reverseOrder()))
+                        .thenComparing(Activity::getId, Comparator.reverseOrder()))
                 .map(this::mapToResponse)
                 .toList();
     }
@@ -24,8 +28,14 @@ public class ActivityService {
                 activity.getId(),
                 activity.getStravaActivityId(),
                 activity.getUserId(),
+                activity.getUserFirstName(),
+                activity.getUserLastName(),
                 activity.getTeamPoints(),
-                activity.getType()
+                activity.getType(),
+                activity.getActivityName(),
+                activity.getOccurredAt(),
+                activity.getDistanceMeters(),
+                activity.getMovingTimeSeconds()
         );
     }
 }
