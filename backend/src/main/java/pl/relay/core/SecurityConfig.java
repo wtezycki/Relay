@@ -1,11 +1,15 @@
 package pl.relay.core;
 
+import jakarta.servlet.http.HttpServletRequest;
+import jakarta.servlet.http.HttpServletResponse;
 import java.util.List;
 import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.http.HttpMethod;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.MediaType;
 import org.springframework.security.config.Customizer;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.configurers.AbstractHttpConfigurer;
@@ -49,6 +53,26 @@ public class SecurityConfig {
                         .userInfoEndpoint(userInfo -> userInfo.userService(customOAuth2UserService))
                         .successHandler(customOAuth2UserService)
                 )
+                .exceptionHandling(exceptionHandling -> exceptionHandling
+                        .defaultAuthenticationEntryPointFor(
+                                (request, response, exception) -> writeApiError(
+                                        request,
+                                        response,
+                                        HttpStatus.UNAUTHORIZED,
+                                        "Authentication is required."
+                                ),
+                                request -> request.getRequestURI().startsWith("/api/")
+                        )
+                        .defaultAccessDeniedHandlerFor(
+                                (request, response, exception) -> writeApiError(
+                                        request,
+                                        response,
+                                        HttpStatus.FORBIDDEN,
+                                        "You do not have permission to access this resource."
+                                ),
+                                request -> request.getRequestURI().startsWith("/api/")
+                        )
+                )
                 .logout(logout -> logout
                         .logoutRequestMatcher(request ->
                                 "GET".equals(request.getMethod()) && "/logout".equals(request.getServletPath())
@@ -74,5 +98,36 @@ public class SecurityConfig {
         var source = new UrlBasedCorsConfigurationSource();
         source.registerCorsConfiguration("/**", configuration);
         return source;
+    }
+
+    private void writeApiError(
+            HttpServletRequest request,
+            HttpServletResponse response,
+            HttpStatus status,
+            String message
+    ) throws java.io.IOException {
+        response.setStatus(status.value());
+        response.setContentType(MediaType.APPLICATION_JSON_VALUE);
+        response.setCharacterEncoding("UTF-8");
+        var payload = ApiErrorResponse.of(status.value(), status.getReasonPhrase(), message, request.getRequestURI());
+        response.getWriter().write(toJson(payload));
+    }
+
+    private String toJson(ApiErrorResponse errorResponse) {
+        return """
+                {"timestamp":"%s","status":%d,"error":"%s","message":"%s","path":"%s"}
+                """.formatted(
+                errorResponse.timestamp(),
+                errorResponse.status(),
+                escapeJson(errorResponse.error()),
+                escapeJson(errorResponse.message()),
+                escapeJson(errorResponse.path())
+        );
+    }
+
+    private String escapeJson(String value) {
+        return value
+                .replace("\\", "\\\\")
+                .replace("\"", "\\\"");
     }
 }
