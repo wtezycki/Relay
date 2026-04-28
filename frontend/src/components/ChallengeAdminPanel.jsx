@@ -11,7 +11,7 @@ const INITIAL_EDIT_STATE = {
   isActive: false,
 }
 
-function ChallengeAdminPanel({ onCurrentChallengeChange }) {
+function ChallengeAdminPanel({ onActiveChallengesChange }) {
   const [challenges, setChallenges] = useState([])
   const [isLoading, setIsLoading] = useState(true)
   const [message, setMessage] = useState('')
@@ -53,7 +53,7 @@ function ChallengeAdminPanel({ onCurrentChallengeChange }) {
 
   async function handleCreate() {
     await loadChallenges()
-    await refreshCurrentChallenge()
+    await refreshActiveChallenges()
     setMessage('Wyzwanie zostało zapisane i lista została odświeżona.')
   }
 
@@ -64,8 +64,8 @@ function ChallengeAdminPanel({ onCurrentChallengeChange }) {
     try {
       await api.patch(`/api/challenge/${challengeId}/activate`)
       await loadChallenges()
-      await refreshCurrentChallenge()
-      setMessage('Aktywne wyzwanie zostało zmienione.')
+      await refreshActiveChallenges()
+      setMessage('Status aktywności wyzwania został zmieniony.')
     } catch (error) {
       setMessage(getApiErrorMessage(error, 'Nie udało się aktywować wyzwania.'))
     } finally {
@@ -80,7 +80,7 @@ function ChallengeAdminPanel({ onCurrentChallengeChange }) {
     try {
       await api.delete(`/api/challenge/${challengeId}`)
       await loadChallenges()
-      await refreshCurrentChallenge()
+      await refreshActiveChallenges()
       if (editState.challengeId === challengeId) {
         cancelEditing()
       }
@@ -111,7 +111,7 @@ function ChallengeAdminPanel({ onCurrentChallengeChange }) {
       })
 
       await loadChallenges()
-      await refreshCurrentChallenge()
+      await refreshActiveChallenges()
       cancelEditing()
       setMessage('Wyzwanie zostało zaktualizowane.')
     } catch (error) {
@@ -121,13 +121,13 @@ function ChallengeAdminPanel({ onCurrentChallengeChange }) {
     }
   }
 
-  async function refreshCurrentChallenge() {
+  async function refreshActiveChallenges() {
     try {
-      const response = await api.get('/api/challenge/current')
-      onCurrentChallengeChange(response.data)
+      const response = await api.get('/api/challenge/active')
+      onActiveChallengesChange(response.data)
     } catch (error) {
       if (error.response?.status === 404) {
-        onCurrentChallengeChange(null)
+        onActiveChallengesChange([])
         return
       }
 

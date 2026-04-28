@@ -10,7 +10,7 @@ import api, { getApiErrorMessage } from '../services/api.js'
 
 function DashboardPage() {
   const { user, isLoading: isAuthLoading, isAuthenticated, isAdmin, loginWithStrava, logout } = useAuth()
-  const { challenge, activities, isLoading, errorMessage, setActivities, setChallenge } =
+  const { challenges, activities, isLoading, errorMessage, setActivities, setChallenges } =
     useDashboardData(isAuthenticated)
   const [isSyncing, setIsSyncing] = useState(false)
   const [syncMessage, setSyncMessage] = useState('')
@@ -22,12 +22,12 @@ function DashboardPage() {
     try {
       await api.post('/api/admin/sync')
 
-      const [challengeResponse, activitiesResponse] = await Promise.all([
-        api.get('/api/challenge/current'),
+      const [challengesResponse, activitiesResponse] = await Promise.all([
+        api.get('/api/challenge/active'),
         api.get('/api/activities'),
       ])
 
-      setChallenge(challengeResponse.data)
+      setChallenges(challengesResponse.data)
       setActivities(activitiesResponse.data)
       setSyncMessage('Synchronizacja zakończona.')
     } catch (error) {
@@ -142,28 +142,32 @@ function DashboardPage() {
             )}
           </SectionCard>
 
-          <SectionCard subtitle="Postęp aktualnego wyzwania po stronie backendu." title="Aktualny cel">
+          <SectionCard subtitle="Postęp aktualnych wyzwań po stronie backendu." title="Aktywne cele">
             {!isAuthenticated ? (
               <p className="text-sm text-ink/70">Zaloguj się, aby wczytać dane wyzwania.</p>
             ) : isLoading ? (
-              <p className="text-sm text-ink/70">Ładowanie wyzwania...</p>
-            ) : challenge ? (
-              <div className="space-y-4">
-                <div className="flex items-start justify-between gap-3">
-                  <div>
-                    <p className="font-display text-3xl font-bold text-ink">{challenge.name}</p>
-                    <p className="mt-1 text-sm text-ink/65">
-                      {challenge.currentPoints} / {challenge.targetPoints} punktów zespołowych
-                    </p>
+              <p className="text-sm text-ink/70">Ładowanie wyzwań...</p>
+            ) : challenges && challenges.length > 0 ? (
+              <div className="space-y-6">
+                {challenges.map(challenge => (
+                  <div key={challenge.id} className="space-y-4">
+                    <div className="flex items-start justify-between gap-3">
+                      <div>
+                        <p className="font-display text-3xl font-bold text-ink">{challenge.name}</p>
+                        <p className="mt-1 text-sm text-ink/65">
+                          {challenge.currentPoints} / {challenge.targetPoints} punktów zespołowych
+                        </p>
+                      </div>
+                      <div className="rounded-full bg-ember/10 px-3 py-2 text-sm font-semibold text-ember">
+                        {challenge.progressPercentage.toFixed(1)}%
+                      </div>
+                    </div>
+                    <ProgressBar percentage={challenge.progressPercentage} />
                   </div>
-                  <div className="rounded-full bg-ember/10 px-3 py-2 text-sm font-semibold text-ember">
-                    {challenge.progressPercentage.toFixed(1)}%
-                  </div>
-                </div>
-                <ProgressBar percentage={challenge.progressPercentage} />
+                ))}
               </div>
             ) : (
-              <p className="text-sm text-ink/70">{errorMessage || 'Brak danych o wyzwaniu.'}</p>
+              <p className="text-sm text-ink/70">{errorMessage || 'Brak aktywnych wyzwań.'}</p>
             )}
           </SectionCard>
         </div>
@@ -173,7 +177,7 @@ function DashboardPage() {
           title="Zarządzanie wyzwaniami"
         >
           {isAuthenticated && isAdmin ? (
-            <ChallengeAdminPanel onCurrentChallengeChange={setChallenge} />
+            <ChallengeAdminPanel onActiveChallengesChange={setChallenges} />
           ) : isAuthenticated ? (
             <p className="text-sm text-ink/70">Tylko administrator może tworzyć i edytować wyzwania.</p>
           ) : (
@@ -198,7 +202,7 @@ function DashboardPage() {
           <InfoTile
             icon={Flag}
             label="Endpoint celu"
-            value="GET /api/challenge/current"
+            value="GET /api/challenge/active"
           />
           <InfoTile
             icon={Activity}

@@ -2,14 +2,14 @@ import { useEffect, useState } from 'react'
 import api, { getApiErrorMessage } from '../services/api.js'
 
 export function useDashboardData(isAuthenticated) {
-  const [challenge, setChallenge] = useState(null)
+  const [challenges, setChallenges] = useState([])
   const [activities, setActivities] = useState([])
   const [isLoading, setIsLoading] = useState(false)
   const [errorMessage, setErrorMessage] = useState('')
 
   useEffect(() => {
     if (!isAuthenticated) {
-      setChallenge(null)
+      setChallenges([])
       setActivities([])
       setIsLoading(false)
       setErrorMessage('')
@@ -23,8 +23,8 @@ export function useDashboardData(isAuthenticated) {
       setErrorMessage('')
 
       try {
-        const [challengeResponse, activitiesResponse] = await Promise.all([
-          api.get('/api/challenge/current'),
+        const [challengesResponse, activitiesResponse] = await Promise.all([
+          api.get('/api/challenge/active'),
           api.get('/api/activities'),
         ])
 
@@ -32,7 +32,7 @@ export function useDashboardData(isAuthenticated) {
           return
         }
 
-        setChallenge(challengeResponse.data)
+        setChallenges(challengesResponse.data)
         setActivities(activitiesResponse.data)
       } catch (error) {
         if (!isMounted) {
@@ -57,11 +57,11 @@ export function useDashboardData(isAuthenticated) {
   }, [isAuthenticated])
 
   return {
-    challenge,
+    challenges,
     activities,
     isLoading,
     errorMessage,
-    setChallenge,
+    setChallenges,
     setActivities,
   }
 }

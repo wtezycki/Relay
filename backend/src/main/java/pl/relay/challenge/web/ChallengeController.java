@@ -28,9 +28,9 @@ public class ChallengeController {
         return challengeService.getAllChallenges();
     }
 
-    @GetMapping("/current")
-    public ChallengeResponse getCurrentChallenge() {
-        return challengeService.getCurrentChallenge();
+    @GetMapping("/active")
+    public List<ChallengeResponse> getActiveChallenges() {
+        return challengeService.getActiveChallenges();
     }
 
     @GetMapping("/{challengeId}")
