@@ -54,20 +54,20 @@ function Layout({ children }) {
         </nav>
 
         {isAuthenticated && (
-          <div className="p-4 border-t border-white/5 mt-auto">
-            <div className="flex items-center gap-3 px-2 py-3 mb-2">
+          <div className="p-4 border-t border-white/5 mt-auto space-y-2">
+            <Link to="/profile" className="flex items-center gap-3 px-2 py-3 rounded-xl hover:bg-white/5 transition-colors group cursor-pointer border border-transparent hover:border-white/10">
               {user?.avatarUrl ? (
-                <img src={user.avatarUrl} alt={user.firstName} className="w-10 h-10 rounded-full object-cover border-2 border-white/10" />
+                <img src={user.avatarUrl} alt={user.firstName} className="w-10 h-10 rounded-full object-cover border-2 border-white/10 group-hover:border-primary/50 transition-colors" />
               ) : (
-                <div className="w-10 h-10 rounded-full bg-surface-hover flex items-center justify-center">
+                <div className="w-10 h-10 rounded-full bg-surface-hover flex items-center justify-center group-hover:border-primary/50 border-2 border-transparent transition-colors">
                   <span className="text-gray-400 font-bold">{user?.firstName?.charAt(0)}</span>
                 </div>
               )}
               <div className="flex-1 min-w-0">
-                <p className="text-sm font-bold text-white truncate">{user?.firstName} {user?.lastName}</p>
+                <p className="text-sm font-bold text-white truncate group-hover:text-primary transition-colors">{user?.firstName} {user?.lastName}</p>
                 <p className="text-xs text-gray-400 truncate">Streak: 🔥 {user?.consistencyStreak || 0}</p>
               </div>
-            </div>
+            </Link>
             <button
               onClick={logout}
               className="w-full flex items-center justify-center gap-2 py-2.5 rounded-xl text-sm font-semibold text-gray-400 hover:text-red-400 hover:bg-red-400/10 transition-colors"
