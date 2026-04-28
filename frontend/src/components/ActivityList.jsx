@@ -16,8 +16,13 @@ function ActivityList({ activities }) {
         >
           <div className="space-y-2">
             <div>
-              <p className="font-medium text-ink">
+              <p className="font-medium text-ink flex items-center gap-1">
                 {activity.userFirstName} {activity.userLastName}
+                {activity.userConsistencyStreak > 0 && (
+                  <span className="text-sm font-semibold text-ember ml-1">
+                    🔥 {activity.userConsistencyStreak}
+                  </span>
+                )}
               </p>
               <p className="text-sm text-ink/60">
                 {formatActivityDate(activity.occurredAt)} · {activity.type}

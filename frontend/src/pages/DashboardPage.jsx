@@ -123,8 +123,13 @@ function DashboardPage() {
                   )}
                   <div>
                     <p className="font-semibold text-ink">{`Cześć, ${user.firstName}`}</p>
-                    <p className="text-sm text-ink/65">
+                    <p className="text-sm text-ink/65 flex items-center gap-1">
                       {user.firstName} {user.lastName}
+                      {user.consistencyStreak > 0 && (
+                        <span className="font-semibold text-ember ml-1">
+                          🔥 {user.consistencyStreak}
+                        </span>
+                      )}
                     </p>
                     <p className="text-sm text-ink/65">Atleta Stravy #{user.stravaAthleteId}</p>
                     <p className="text-sm text-ink/65">Rola: {user.role === 'ADMIN' ? 'Administrator' : 'Użytkownik'}</p>

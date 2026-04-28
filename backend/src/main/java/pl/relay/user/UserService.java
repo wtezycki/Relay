@@ -7,6 +7,7 @@ import org.springframework.security.oauth2.core.user.OAuth2User;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.server.ResponseStatusException;
+import pl.relay.activity.ActivityService;
 import pl.relay.user.dto.UserResponse;
 
 @Service
@@ -14,6 +15,7 @@ import pl.relay.user.dto.UserResponse;
 public class UserService {
 
     private final UserRepository userRepository;
+    private final ActivityService activityService;
 
     @Transactional(readOnly = true)
     public UserResponse getCurrentUser(OAuth2User oAuth2User) {
@@ -25,13 +27,16 @@ public class UserService {
         var user = userRepository.findByStravaAthleteId(stravaAthleteId)
                 .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "User not found."));
 
+        int streak = activityService.calculateConsistencyStreak(user.getId());
+
         return new UserResponse(
                 user.getId(),
                 user.getStravaAthleteId(),
                 user.getFirstName(),
                 user.getLastName(),
                 user.getAvatarUrl(),
-                user.getRole() == null ? UserRole.USER : user.getRole()
+                user.getRole() == null ? UserRole.USER : user.getRole(),
+                streak
         );
     }
 
