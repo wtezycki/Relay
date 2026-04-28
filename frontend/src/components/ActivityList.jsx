@@ -10,6 +10,18 @@ const TYPE_NAMES_PL = {
   'Hike': 'Wędrówka',
   'WeightTraining': 'Trening siłowy',
   'Workout': 'Trening',
+  'RockClimbing': 'Wspinaczka',
+  'Bouldering': 'Bouldering',
+  'AlpineSki': 'Narciarstwo',
+  'Snowboard': 'Snowboard',
+  'IceSkate': 'Łyżwy',
+  'InlineSkate': 'Rolki',
+  'Kayaking': 'Kajakarstwo',
+  'Rowing': 'Wioślarstwo',
+  'Crossfit': 'Crossfit',
+  'Elliptical': 'Orbitrek',
+  'VirtualRide': 'Rower wirtualny',
+  'VirtualRun': 'Bieg wirtualny',
 }
 
 function ActivityList({ activities, setActivities, user }) {

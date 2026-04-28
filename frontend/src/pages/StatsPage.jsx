@@ -13,6 +13,18 @@ const TYPE_COLORS = {
   'Swim': 'bg-cyan-500',
   'Hike': 'bg-emerald-600',
   'WeightTraining': 'bg-rose-500',
+  'RockClimbing': 'bg-slate-500',
+  'Bouldering': 'bg-slate-600',
+  'AlpineSki': 'bg-sky-400',
+  'Snowboard': 'bg-sky-500',
+  'IceSkate': 'bg-sky-300',
+  'InlineSkate': 'bg-indigo-500',
+  'Kayaking': 'bg-blue-400',
+  'Rowing': 'bg-blue-600',
+  'Crossfit': 'bg-rose-600',
+  'Elliptical': 'bg-rose-400',
+  'VirtualRide': 'bg-blue-300',
+  'VirtualRun': 'bg-orange-300',
 }
 
 const TYPE_HEX_COLORS = {
@@ -23,6 +35,18 @@ const TYPE_HEX_COLORS = {
   'Swim': '#06b6d4',
   'Hike': '#059669',
   'WeightTraining': '#f43f5e',
+  'RockClimbing': '#64748b',
+  'Bouldering': '#475569',
+  'AlpineSki': '#38bdf8',
+  'Snowboard': '#0ea5e9',
+  'IceSkate': '#7dd3fc',
+  'InlineSkate': '#6366f1',
+  'Kayaking': '#60a5fa',
+  'Rowing': '#2563eb',
+  'Crossfit': '#e11d48',
+  'Elliptical': '#fb7185',
+  'VirtualRide': '#93c5fd',
+  'VirtualRun': '#fdba74',
 }
 
 const TYPE_ICONS = {
@@ -33,6 +57,18 @@ const TYPE_ICONS = {
   'Swim': '🏊',
   'Hike': '🥾',
   'WeightTraining': '🏋️',
+  'RockClimbing': '🧗',
+  'Bouldering': '🧗‍♂️',
+  'AlpineSki': '⛷️',
+  'Snowboard': '🏂',
+  'IceSkate': '⛸️',
+  'InlineSkate': '🛼',
+  'Kayaking': '🛶',
+  'Rowing': '🚣',
+  'Crossfit': '💪',
+  'Elliptical': '🏃',
+  'VirtualRide': '🚴‍♂️',
+  'VirtualRun': '🏃',
 }
 
 const TYPE_NAMES_PL = {
@@ -44,6 +80,18 @@ const TYPE_NAMES_PL = {
   'Hike': 'Wędrówka',
   'WeightTraining': 'Trening siłowy',
   'Workout': 'Trening',
+  'RockClimbing': 'Wspinaczka',
+  'Bouldering': 'Bouldering',
+  'AlpineSki': 'Narciarstwo',
+  'Snowboard': 'Snowboard',
+  'IceSkate': 'Łyżwy',
+  'InlineSkate': 'Rolki',
+  'Kayaking': 'Kajakarstwo',
+  'Rowing': 'Wioślarstwo',
+  'Crossfit': 'Crossfit',
+  'Elliptical': 'Orbitrek',
+  'VirtualRide': 'Rower wirtualny',
+  'VirtualRun': 'Bieg wirtualny',
 }
 
 function StatsPage() {
