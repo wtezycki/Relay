@@ -1,3 +1,14 @@
+const TYPE_NAMES_PL = {
+  'Run': 'Bieganie',
+  'Ride': 'Rower',
+  'Yoga': 'Joga',
+  'Walk': 'Spacer',
+  'Swim': 'Pływanie',
+  'Hike': 'Wędrówka',
+  'WeightTraining': 'Trening siłowy',
+  'Workout': 'Trening',
+}
+
 function ActivityList({ activities }) {
   if (!activities.length) {
     return (
@@ -9,7 +20,10 @@ function ActivityList({ activities }) {
 
   return (
     <div className="space-y-4">
-      {activities.map((activity) => (
+      {activities.map((activity) => {
+        const translatedType = TYPE_NAMES_PL[activity.type] || activity.type
+        
+        return (
         <article
           key={activity.id}
           className="glass-card p-5 flex flex-col gap-4 md:flex-row md:items-center md:justify-between group"
@@ -25,12 +39,12 @@ function ActivityList({ activities }) {
                 )}
               </p>
               <p className="text-xs text-gray-400 font-medium">
-                {formatActivityDate(activity.occurredAt)} <span className="mx-1 opacity-50">•</span> {activity.type}
+                {formatActivityDate(activity.occurredAt)} <span className="mx-1 opacity-50">•</span> {translatedType}
               </p>
             </div>
             <div>
               <p className="text-sm font-bold text-gray-200 group-hover:text-primary transition-colors">
-                {activity.activityName || formatFallbackActivityName(activity.type)}
+                {activity.activityName || formatFallbackActivityName(translatedType)}
               </p>
               <p className="text-xs text-gray-400">
                 {formatActivityDetails(activity)}
@@ -46,7 +60,7 @@ function ActivityList({ activities }) {
             </div>
           </div>
         </article>
-      ))}
+      )})}
     </div>
   )
 }
