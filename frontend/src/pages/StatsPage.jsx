@@ -122,11 +122,11 @@ function StatsPage() {
       const d = new Date()
       d.setDate(d.getDate() - i)
       const dateStr = d.toLocaleDateString('en-CA')
-      
+
       const dayPoints = activities
         .filter(a => a.occurredAt && new Date(a.occurredAt).toLocaleDateString('en-CA') === dateStr)
         .reduce((sum, a) => sum + a.teamPoints, 0)
-        
+
       data.push({
         name: d.toLocaleDateString('pl-PL', { day: '2-digit', month: '2-digit' }),
         TP: dayPoints
@@ -174,7 +174,7 @@ function StatsPage() {
         <section className="space-y-6">
           <h2 className="font-display text-2xl font-bold text-white mb-4">Statystyki Zespołu</h2>
 
-          {/* Wielkie Liczby */}
+          { }
           <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
             <div className="glass-panel p-6 relative overflow-hidden">
               <div className="absolute top-0 right-0 w-32 h-32 bg-primary/20 blur-[50px] rounded-full pointer-events-none"></div>
@@ -192,20 +192,20 @@ function StatsPage() {
               <p className="font-display text-5xl font-extrabold text-white">{totalTimeHours} <span className="text-2xl text-green-400">godz.</span></p>
             </div>
           </div>
-          
+
           <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
-            {/* Wykres 7 dni */}
+            { }
             <div className="glass-panel p-6 relative overflow-hidden">
               <h3 className="font-display text-xl font-bold text-white mb-2">Aktywność (Ostatnie 7 dni)</h3>
               <p className="text-sm text-gray-400 mb-6">Suma zdobytych punktów przez cały zespół dzień po dniu.</p>
-              
+
               <div className="h-64 w-full">
                 <ResponsiveContainer width="100%" height="100%">
                   <BarChart data={last7DaysData} margin={{ top: 10, right: 10, left: -20, bottom: 0 }}>
                     <CartesianGrid strokeDasharray="3 3" stroke="#3f3f46" vertical={false} />
                     <XAxis dataKey="name" stroke="#a1a1aa" fontSize={11} tickLine={false} axisLine={false} interval={0} />
                     <YAxis stroke="#a1a1aa" fontSize={11} tickLine={false} axisLine={false} />
-                    <RechartsTooltip 
+                    <RechartsTooltip
                       cursor={{ fill: 'rgba(255,255,255,0.05)' }}
                       contentStyle={{ backgroundColor: '#18181b', borderColor: '#3f3f46', borderRadius: '0.75rem', color: '#fff' }}
                     />
@@ -215,45 +215,45 @@ function StatsPage() {
               </div>
             </div>
 
-            {/* Balans Aktywności */}
+            { }
             <div className="glass-panel p-6 relative overflow-hidden">
-             <h3 className="font-display text-xl font-bold text-white mb-4">Balans Aktywności Zespołu</h3>
-             <p className="text-sm text-gray-400 mb-6">Procentowy udział poszczególnych rodzajów treningów we wspólnej puli punktów. Każda forma ruchu popycha nas do celu!</p>
-             
-             {totalTeamPoints === 0 ? (
-                <p className="text-gray-400 text-sm">Zespół nie zdobył jeszcze żadnych punktów.</p>
-             ) : (
-               <div className="flex flex-col md:flex-row items-center gap-8">
-                 {/* Chart */}
-                 <div className="h-64 w-full md:w-1/2">
-                   <ResponsiveContainer width="100%" height="100%">
-                     <PieChart>
-                       <Pie
-                         data={teamPieData}
-                         cx="50%"
-                         cy="50%"
-                         innerRadius={70}
-                         outerRadius={95}
-                         paddingAngle={4}
-                         dataKey="value"
-                         stroke="none"
-                         animationDuration={1000}
-                       >
-                         {teamPieData.map((entry, index) => (
-                           <Cell key={`cell-${index}`} fill={entry.color} />
-                         ))}
-                       </Pie>
-                       <RechartsTooltip 
-                         formatter={(value) => [`${value} TP`, 'Punkty']}
-                         contentStyle={{ backgroundColor: '#18181b', borderColor: '#3f3f46', borderRadius: '0.75rem', color: '#fff', boxShadow: '0 10px 15px -3px rgba(0, 0, 0, 0.5)' }}
-                         itemStyle={{ color: '#fff', fontWeight: 'bold' }}
-                       />
-                     </PieChart>
-                   </ResponsiveContainer>
-                 </div>
+              <h3 className="font-display text-xl font-bold text-white mb-4">Balans Aktywności Zespołu</h3>
+              <p className="text-sm text-gray-400 mb-6">Procentowy udział poszczególnych rodzajów treningów we wspólnej puli punktów. Każda forma ruchu popycha nas do celu!</p>
 
-                 {/* Legend */}
-                 <div className="flex flex-col gap-3 w-full md:w-1/2 text-sm font-medium">
+              {totalTeamPoints === 0 ? (
+                <p className="text-gray-400 text-sm">Zespół nie zdobył jeszcze żadnych punktów.</p>
+              ) : (
+                <div className="flex flex-col md:flex-row items-center gap-8">
+                  {/* Chart */}
+                  <div className="h-64 w-full md:w-1/2">
+                    <ResponsiveContainer width="100%" height="100%">
+                      <PieChart>
+                        <Pie
+                          data={teamPieData}
+                          cx="50%"
+                          cy="50%"
+                          innerRadius={70}
+                          outerRadius={95}
+                          paddingAngle={4}
+                          dataKey="value"
+                          stroke="none"
+                          animationDuration={1000}
+                        >
+                          {teamPieData.map((entry, index) => (
+                            <Cell key={`cell-${index}`} fill={entry.color} />
+                          ))}
+                        </Pie>
+                        <RechartsTooltip
+                          formatter={(value) => [`${value} TP`, 'Punkty']}
+                          contentStyle={{ backgroundColor: '#18181b', borderColor: '#3f3f46', borderRadius: '0.75rem', color: '#fff', boxShadow: '0 10px 15px -3px rgba(0, 0, 0, 0.5)' }}
+                          itemStyle={{ color: '#fff', fontWeight: 'bold' }}
+                        />
+                      </PieChart>
+                    </ResponsiveContainer>
+                  </div>
+
+                  {/* Legend */}
+                  <div className="flex flex-col gap-3 w-full md:w-1/2 text-sm font-medium">
                     {teamPieData.map((entry) => {
                       const percentage = (entry.value / totalTeamPoints) * 100
                       return (
@@ -268,10 +268,10 @@ function StatsPage() {
                           </div>
                         </div>
                       )
-                  })}
-                 </div>
-               </div>
-             )}
+                    })}
+                  </div>
+                </div>
+              )}
             </div>
           </div>
         </section>

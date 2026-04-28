@@ -1,4 +1,5 @@
 import { ThumbsUp } from 'lucide-react'
+import { Link } from 'react-router-dom'
 import api from '../services/api.js'
 
 const TYPE_NAMES_PL = {
@@ -70,7 +71,9 @@ function ActivityList({ activities, setActivities, user }) {
             <div className="space-y-2">
               <div>
                 <p className="font-semibold text-white flex items-center gap-2">
-                  {activity.userFirstName} {activity.userLastName}
+                  <Link to={`/profile/${activity.userId}`} className="hover:text-primary transition-colors">
+                    {activity.userFirstName} {activity.userLastName}
+                  </Link>
                   {activity.userConsistencyStreak > 0 && (
                     <span className="inline-flex items-center gap-1 rounded-full bg-orange-500/10 px-2 py-0.5 text-xs font-bold text-orange-400 border border-orange-500/20">
                       🔥 {activity.userConsistencyStreak}

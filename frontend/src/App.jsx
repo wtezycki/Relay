@@ -14,6 +14,7 @@ function App() {
       <Route path="/leaderboard" element={<LeaderboardPage />} />
       <Route path="/stats" element={<StatsPage />} />
       <Route path="/profile" element={<ProfilePage />} />
+      <Route path="/profile/:userId" element={<ProfilePage />} />
       <Route path="/admin" element={<AdminPage />} />
       <Route path="*" element={<Navigate to="/" replace />} />
     </Routes>

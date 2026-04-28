@@ -1,4 +1,5 @@
 import { useMemo } from 'react'
+import { Link } from 'react-router-dom'
 import { Trophy, Medal } from 'lucide-react'
 import SectionCard from '../components/SectionCard.jsx'
 import { useAuth } from '../hooks/useAuth.js'
@@ -79,12 +80,13 @@ function LeaderboardPage() {
                 else rankIcon = <span className="font-bold text-gray-500 w-6 text-center">{index + 1}</span>
 
                 return (
-                  <div 
+                  <Link 
                     key={player.userId} 
-                    className={`flex items-center justify-between p-4 rounded-xl border transition-all ${
+                    to={`/profile/${player.userId}`}
+                    className={`flex items-center justify-between p-4 rounded-xl border transition-all hover:scale-[1.01] ${
                       isCurrentUser 
                         ? 'bg-primary/10 border-primary/30 shadow-[0_0_15px_rgba(255,87,34,0.1)]' 
-                        : 'bg-white/5 border-white/5 hover:bg-white/10'
+                        : 'bg-white/5 border-white/5 hover:bg-white/10 hover:border-white/10'
                     }`}
                   >
                     <div className="flex items-center gap-4">
@@ -110,7 +112,7 @@ function LeaderboardPage() {
                       </p>
                       <p className="text-xs text-primary font-bold">TP</p>
                     </div>
-                  </div>
+                  </Link>
                 )
               })
             )}

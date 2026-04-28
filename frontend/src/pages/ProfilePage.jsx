@@ -1,4 +1,5 @@
 import { useMemo } from 'react'
+import { useParams } from 'react-router-dom'
 import { User as UserIcon, Medal } from 'lucide-react'
 import SectionCard from '../components/SectionCard.jsx'
 import ActivityList from '../components/ActivityList.jsx'
@@ -27,11 +28,36 @@ const TYPE_NAMES_PL = {
 function ProfilePage() {
   const { user, isAuthenticated } = useAuth()
   const { activities, setActivities } = useDashboardData(isAuthenticated)
+  const { userId } = useParams()
+
+  const targetUserId = useMemo(() => {
+    if (userId) return parseInt(userId, 10)
+    return user?.id
+  }, [userId, user])
 
   const userActivities = useMemo(() => {
-    if (!activities) return []
-    return activities.filter(a => a.userFirstName === user?.firstName && a.userLastName === user?.lastName)
-  }, [activities, user])
+    if (!activities || !targetUserId) return []
+    return activities.filter(a => a.userId === targetUserId)
+  }, [activities, targetUserId])
+
+  const profileOwner = useMemo(() => {
+    if (!targetUserId) return null
+    if (targetUserId === user?.id) return user
+
+    if (userActivities.length > 0) {
+      const latestActivity = userActivities.reduce((prev, current) => 
+        (new Date(prev.occurredAt) > new Date(current.occurredAt)) ? prev : current
+      )
+      return {
+        id: targetUserId,
+        firstName: latestActivity.userFirstName,
+        lastName: latestActivity.userLastName,
+        avatarUrl: null,
+        consistencyStreak: latestActivity.userConsistencyStreak
+      }
+    }
+    return null
+  }, [targetUserId, user, userActivities])
 
   const totalUserPoints = useMemo(() => userActivities.reduce((acc, a) => acc + a.teamPoints, 0), [userActivities])
 
@@ -81,20 +107,40 @@ function ProfilePage() {
     )
   }
 
+  if (!profileOwner) {
+    return (
+      <Layout>
+        <div className="flex flex-col gap-8">
+          <div className="mb-4">
+            <h1 className="font-display text-4xl font-extrabold text-white">Profil</h1>
+          </div>
+          <SectionCard title="Nie znaleziono">
+            <p className="text-gray-400">Ten użytkownik nie posiada jeszcze żadnych zarejestrowanych aktywności lub nie istnieje.</p>
+          </SectionCard>
+        </div>
+      </Layout>
+    )
+  }
+
+  const isCurrentUser = profileOwner.id === user?.id
+
   return (
     <Layout>
       <div className="flex flex-col gap-8">
         <div className="flex items-center gap-6 glass-panel p-8 relative overflow-hidden">
           <div className="absolute top-0 right-0 w-64 h-64 bg-primary/10 blur-[100px] rounded-full pointer-events-none"></div>
-          {user.avatarUrl ? (
-            <img src={user.avatarUrl} alt={user.firstName} className="w-24 h-24 rounded-full object-cover border-4 border-white/10 z-10" />
+          {profileOwner.avatarUrl ? (
+            <img src={profileOwner.avatarUrl} alt={profileOwner.firstName} className="w-24 h-24 rounded-full object-cover border-4 border-white/10 z-10" />
           ) : (
             <div className="w-24 h-24 rounded-full bg-surface-hover flex items-center justify-center border-4 border-white/10 z-10">
-              <span className="text-3xl text-gray-400 font-bold">{user?.firstName?.charAt(0)}</span>
+              <span className="text-3xl text-gray-400 font-bold">{profileOwner?.firstName?.charAt(0)}</span>
             </div>
           )}
           <div className="z-10">
-            <h1 className="font-display text-4xl font-extrabold text-white">{user.firstName} {user.lastName}</h1>
+            <h1 className="font-display text-4xl font-extrabold text-white">
+              {profileOwner.firstName} {profileOwner.lastName}
+              {isCurrentUser && <span className="ml-3 text-[12px] align-middle bg-primary/20 text-primary px-3 py-1 rounded-full uppercase tracking-wider border border-primary/30">Ty</span>}
+            </h1>
             <p className="text-gray-400 mt-1">Członek zespołu Relay</p>
           </div>
         </div>
@@ -111,7 +157,7 @@ function ProfilePage() {
               <div className="absolute top-0 right-0 w-32 h-32 bg-orange-500/20 blur-[50px] rounded-full pointer-events-none"></div>
               <p className="text-sm font-semibold uppercase tracking-widest text-gray-400 mb-2">Aktywny Streak</p>
               <p className="font-display text-5xl font-extrabold text-white flex items-center gap-2">
-                {user.consistencyStreak || 0} <span className="text-3xl text-orange-500">🔥</span>
+                {profileOwner.consistencyStreak || 0} <span className="text-3xl text-orange-500">🔥</span>
               </p>
             </div>
             
