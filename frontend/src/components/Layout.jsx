@@ -1,4 +1,5 @@
 import { Link, useLocation } from 'react-router-dom'
+import { useEffect } from 'react'
 import { Activity, Target, BarChart2, Shield, LogOut, Trophy } from 'lucide-react'
 import { useAuth } from '../hooks/useAuth.js'
 
@@ -17,6 +18,21 @@ function Layout({ children }) {
     navLinks.push({ name: 'Panel Admina', path: '/admin', icon: Shield })
   }
 
+  useEffect(() => {
+    const currentLink = navLinks.find(link => link.path === location.pathname)
+    let pageTitle = ''
+
+    if (currentLink) {
+      pageTitle = currentLink.name
+    } else if (location.pathname === '/profile') {
+      pageTitle = 'Mój Profil'
+    } else if (location.pathname.startsWith('/profile/')) {
+      pageTitle = 'Profil'
+    }
+
+    document.title = pageTitle ? `Relay | ${pageTitle}` : 'Relay'
+  }, [location.pathname, navLinks])
+
   return (
     <div className="min-h-screen flex flex-col md:flex-row">
       <div className="bg-glow"></div>
@@ -24,10 +40,8 @@ function Layout({ children }) {
       {/* Sidebar Navigation */}
       <aside className="w-full md:w-64 glass-panel m-4 flex flex-col border-white/5 z-10 shrink-0 md:h-[calc(100vh-32px)] md:sticky md:top-4">
         <div className="p-6 border-b border-white/5 flex items-center gap-3">
-          <div className="w-10 h-10 rounded-xl bg-gradient-to-br from-primary to-orange-500 flex items-center justify-center shadow-glow">
-            <svg className="w-6 h-6 text-white" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2.5} d="M13 10V3L4 14h7v7l9-11h-7z" />
-            </svg>
+          <div className="w-10 h-10 rounded-xl flex items-center justify-center overflow-hidden shrink-0 shadow-glow">
+            <img src="/relay_logo.png" alt="Relay" className="w-full h-full object-cover" />
           </div>
           <span className="font-display font-bold text-2xl tracking-tight text-white">Relay</span>
         </div>
