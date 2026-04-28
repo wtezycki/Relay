@@ -34,6 +34,8 @@ class ActivitySyncWorkerTest {
 
         var user = User.builder()
                 .id(7L)
+                .firstName("Wiktor")
+                .lastName("Nowak")
                 .accessToken("token-123")
                 .build();
 
@@ -64,8 +66,14 @@ class ActivitySyncWorkerTest {
 
         assertThat(savedActivity.getValue().getStravaActivityId()).isEqualTo(101L);
         assertThat(savedActivity.getValue().getUserId()).isEqualTo(7L);
+        assertThat(savedActivity.getValue().getUserFirstName()).isEqualTo("Wiktor");
+        assertThat(savedActivity.getValue().getUserLastName()).isEqualTo("Nowak");
         assertThat(savedActivity.getValue().getTeamPoints()).isEqualTo(2);
         assertThat(savedActivity.getValue().getType()).isEqualTo("Run");
+        assertThat(savedActivity.getValue().getActivityName()).isEqualTo("Lunch Run");
+        assertThat(savedActivity.getValue().getOccurredAt()).isEqualTo(java.time.Instant.parse("2026-04-28T10:00:00Z"));
+        assertThat(savedActivity.getValue().getDistanceMeters()).isEqualTo(2_500d);
+        assertThat(savedActivity.getValue().getMovingTimeSeconds()).isEqualTo(1_500L);
         verify(stravaTokenService).ensureValidAccessToken(user);
         verify(challengeService).addPointsToActiveChallenge(2);
     }
@@ -78,8 +86,8 @@ class ActivitySyncWorkerTest {
 
             var responseBody = """
                     [
-                      {"id":101,"type":"Run","distance":2500,"moving_time":1500},
-                      {"id":102,"type":"Yoga","distance":0,"moving_time":1800}
+                      {"id":101,"name":"Lunch Run","type":"Run","distance":2500,"moving_time":1500,"start_date":"2026-04-28T10:00:00Z"},
+                      {"id":102,"name":"Evening Yoga","type":"Yoga","distance":0,"moving_time":1800,"start_date":"2026-04-27T18:30:00Z"}
                     ]
                     """;
 

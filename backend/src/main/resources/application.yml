@@ -37,6 +37,10 @@ spring:
             user-name-attribute: id
 
 relay:
+  admin:
+    strava-athlete-id: ${STRAVA_ADMIN_ATHLETE_ID:}
+  dev:
+    seed-demo-activities: ${RELAY_SEED_DEMO_ACTIVITIES:true}
   cors:
     allowed-origin: http://localhost:5173
   frontend:

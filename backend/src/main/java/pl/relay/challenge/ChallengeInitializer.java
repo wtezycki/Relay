@@ -12,7 +12,7 @@ public class ChallengeInitializer {
 
     private final ChallengeRepository challengeRepository;
 
-    @Value("${relay.challenge.default.name:Run to Tokyo}")
+    @Value("${relay.challenge.default.name:Bieg do Tokio}")
     private String defaultChallengeName;
 
     @Value("${relay.challenge.default.target-points:8000}")

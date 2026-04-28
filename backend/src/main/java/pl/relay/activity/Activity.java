@@ -6,6 +6,7 @@ import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
 import jakarta.persistence.Table;
+import java.time.Instant;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
@@ -30,8 +31,22 @@ public class Activity {
     private Long userId;
 
     @Column(nullable = false)
+    private String userFirstName;
+
+    @Column(nullable = false)
+    private String userLastName;
+
+    @Column(nullable = false)
     private Integer teamPoints;
 
     @Column(nullable = false)
     private String type;
+
+    private String activityName;
+
+    private Instant occurredAt;
+
+    private Double distanceMeters;
+
+    private Long movingTimeSeconds;
 }

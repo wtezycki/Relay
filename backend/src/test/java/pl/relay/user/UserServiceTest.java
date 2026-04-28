@@ -28,6 +28,7 @@ class UserServiceTest {
                 .firstName("Jan")
                 .lastName("Kowalski")
                 .avatarUrl("https://example.com/avatar.png")
+                .role(UserRole.ADMIN)
                 .build();
 
         when(userRepository.findByStravaAthleteId(12345L)).thenReturn(Optional.of(user));
@@ -39,6 +40,7 @@ class UserServiceTest {
         assertThat(response.firstName()).isEqualTo("Jan");
         assertThat(response.lastName()).isEqualTo("Kowalski");
         assertThat(response.avatarUrl()).isEqualTo("https://example.com/avatar.png");
+        assertThat(response.role()).isEqualTo(UserRole.ADMIN);
     }
 
     @Test

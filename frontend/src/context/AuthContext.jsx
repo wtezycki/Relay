@@ -42,6 +42,7 @@ export function AuthProvider({ children }) {
       user,
       isLoading,
       isAuthenticated: Boolean(user),
+      isAdmin: user?.role === 'ADMIN',
       loginWithStrava() {
         if (isLoading || user) {
           return

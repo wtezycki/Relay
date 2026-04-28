@@ -82,8 +82,14 @@ public class ActivitySyncWorker {
         return Activity.builder()
                 .stravaActivityId(stravaActivity.id())
                 .userId(user.getId())
+                .userFirstName(user.getFirstName())
+                .userLastName(user.getLastName())
                 .teamPoints(teamPoints)
                 .type(stravaActivity.type() == null ? "Unknown" : stravaActivity.type())
+                .activityName(stravaActivity.name())
+                .occurredAt(stravaActivity.startDate())
+                .distanceMeters(stravaActivity.distance())
+                .movingTimeSeconds(stravaActivity.movingTime())
                 .build();
     }
 }

@@ -1,21 +1,23 @@
 import { Activity, Flag, LogIn, RefreshCcw, UserCircle2 } from 'lucide-react'
 import { useState } from 'react'
 import ActivityList from '../components/ActivityList.jsx'
-import CreateChallengeForm from '../components/CreateChallengeForm.jsx'
+import ChallengeAdminPanel from '../components/ChallengeAdminPanel.jsx'
 import ProgressBar from '../components/ProgressBar.jsx'
 import SectionCard from '../components/SectionCard.jsx'
 import { useAuth } from '../hooks/useAuth.js'
 import { useDashboardData } from '../hooks/useDashboardData.js'
-import api from '../services/api.js'
+import api, { getApiErrorMessage } from '../services/api.js'
 
 function DashboardPage() {
-  const { user, isLoading: isAuthLoading, isAuthenticated, loginWithStrava, logout } = useAuth()
+  const { user, isLoading: isAuthLoading, isAuthenticated, isAdmin, loginWithStrava, logout } = useAuth()
   const { challenge, activities, isLoading, errorMessage, setActivities, setChallenge } =
     useDashboardData(isAuthenticated)
   const [isSyncing, setIsSyncing] = useState(false)
+  const [syncMessage, setSyncMessage] = useState('')
 
   async function handleManualSync() {
     setIsSyncing(true)
+    setSyncMessage('')
 
     try {
       await api.post('/api/admin/sync')
@@ -27,6 +29,9 @@ function DashboardPage() {
 
       setChallenge(challengeResponse.data)
       setActivities(activitiesResponse.data)
+      setSyncMessage('Synchronizacja zakończona.')
+    } catch (error) {
+      setSyncMessage(getApiErrorMessage(error, 'Nie udało się uruchomić synchronizacji.'))
     } finally {
       setIsSyncing(false)
     }
@@ -85,7 +90,7 @@ function DashboardPage() {
         <div className="grid gap-6 lg:grid-cols-[1.1fr_0.9fr]">
           <SectionCard
             action={
-              isAuthenticated ? (
+              isAuthenticated && isAdmin ? (
                 <button
                   className="inline-flex items-center gap-2 rounded-2xl border border-pine/15 bg-pine px-4 py-2 text-sm font-semibold text-white transition hover:bg-pine/90 disabled:cursor-not-allowed disabled:opacity-60"
                   disabled={isSyncing}
@@ -103,25 +108,29 @@ function DashboardPage() {
             {isAuthLoading ? (
               <p className="text-sm text-ink/70">Sprawdzanie sesji Spring Security...</p>
             ) : isAuthenticated ? (
-              <div className="flex items-center gap-4 rounded-2xl bg-pine/5 p-4">
-                {user.avatarUrl ? (
-                  <img
-                    alt={`${user.firstName} ${user.lastName}`}
-                    className="h-12 w-12 rounded-full object-cover"
-                    src={user.avatarUrl}
-                  />
-                ) : (
-                  <div className="grid h-12 w-12 place-items-center rounded-full bg-pine text-white">
-                    <UserCircle2 className="h-7 w-7" />
+              <div className="space-y-3">
+                <div className="flex items-center gap-4 rounded-2xl bg-pine/5 p-4">
+                  {user.avatarUrl ? (
+                    <img
+                      alt={`${user.firstName} ${user.lastName}`}
+                      className="h-12 w-12 rounded-full object-cover"
+                      src={user.avatarUrl}
+                    />
+                  ) : (
+                    <div className="grid h-12 w-12 place-items-center rounded-full bg-pine text-white">
+                      <UserCircle2 className="h-7 w-7" />
+                    </div>
+                  )}
+                  <div>
+                    <p className="font-semibold text-ink">{`Cześć, ${user.firstName}`}</p>
+                    <p className="text-sm text-ink/65">
+                      {user.firstName} {user.lastName}
+                    </p>
+                    <p className="text-sm text-ink/65">Atleta Stravy #{user.stravaAthleteId}</p>
+                    <p className="text-sm text-ink/65">Rola: {user.role === 'ADMIN' ? 'Administrator' : 'Użytkownik'}</p>
                   </div>
-                )}
-                <div>
-                  <p className="font-semibold text-ink">{`Cześć, ${user.firstName}`}</p>
-                  <p className="text-sm text-ink/65">
-                    {user.firstName} {user.lastName}
-                  </p>
-                  <p className="text-sm text-ink/65">Atleta Stravy #{user.stravaAthleteId}</p>
                 </div>
+                {syncMessage ? <p className="text-sm text-ink/70">{syncMessage}</p> : null}
               </div>
             ) : (
               <p className="text-sm text-ink/70">Brak aktywnej sesji. Zaloguj się przez Stravę, aby korzystać z chronionych endpointów API.</p>
@@ -155,11 +164,13 @@ function DashboardPage() {
         </div>
 
         <SectionCard
-          subtitle="Szybka akcja administracyjna do utworzenia kolejnego firmowego celu."
-          title="Utwórz wyzwanie"
+          subtitle="Panel administratora do tworzenia, edycji, aktywacji i usuwania wyzwań."
+          title="Zarządzanie wyzwaniami"
         >
-          {isAuthenticated ? (
-            <CreateChallengeForm onCreated={setChallenge} />
+          {isAuthenticated && isAdmin ? (
+            <ChallengeAdminPanel onCurrentChallengeChange={setChallenge} />
+          ) : isAuthenticated ? (
+            <p className="text-sm text-ink/70">Tylko administrator może tworzyć i edytować wyzwania.</p>
           ) : (
             <p className="text-sm text-ink/70">Zaloguj się, zanim utworzysz wyzwanie.</p>
           )}
@@ -192,7 +203,7 @@ function DashboardPage() {
           <InfoTile
             icon={RefreshCcw}
             label="Endpoint synchronizacji"
-            value="POST /api/admin/sync"
+            value={isAdmin ? 'POST /api/admin/sync' : 'Dostępne tylko dla administratora'}
           />
         </section>
       </div>
