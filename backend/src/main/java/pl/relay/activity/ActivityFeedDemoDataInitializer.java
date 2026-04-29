@@ -26,7 +26,8 @@ public class ActivityFeedDemoDataInitializer implements CommandLineRunner {
                 demoActivity(9_000_003L, 1_003L, "Marek", "Zielinski", "Morning Ride", "Ride", 18_500d, 3_180L, 8),
                 demoActivity(9_000_004L, 1_004L, "Ola", "Wisniewska", "Yoga Reset", "Yoga", 0d, 2_700L, 12),
                 demoActivity(9_000_005L, 1_002L, "Ania", "Kowalska", "Tempo Run", "Run", 5_600d, 1_920L, 18),
-                demoActivity(9_000_006L, 1_003L, "Marek", "Zielinski", "Recovery Walk", "Walk", 2_400d, 1_680L, 26)
+                demoActivity(9_000_006L, 1_003L, "Marek", "Zielinski", "Recovery Walk", "Walk", 2_400d, 1_680L, 26),
+                demoActivity(9_000_007L, 1_001L, "Wiktor", "Nowak", "Morning Walk", "Run", 2_137d, 1_240L, 2)
         );
 
         demoActivities.stream()
