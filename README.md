@@ -2,6 +2,8 @@
 
 Relay to w pełni responsywna, grywalizacyjna aplikacja webowa typu fullstack stworzona z myślą o firmach i zespołach. Umożliwia ona integrację ze Stravą, zbierając aktywności pracowników (np. bieganie, jazda na rowerze, joga, wspinaczka) i przeliczając je na zunifikowane punkty zespołu (**Team Points - TP**). Głównym celem aplikacji jest budowanie zaangażowania, zdrowej rywalizacji oraz realizowanie wspólnych celów sportowych w firmie.
 
+<u>**Aplikacja aktualnie pozwala na dostęp jednego konta Strava - została już ona zgłoszona do zespołu Strava, czeka na weryfikacje, dzięki której zwiększy się limit możliwych podłączonych kont.**</u>
+
 ## Demo
 
 ### Logowanie przez konto Strava
@@ -56,7 +58,7 @@ git clone https://github.com/twoja-nazwa/Relay.git
 cd Relay
 ```
 
-### 2. Uruchomienie Backend'u (Spring Boot)
+### 2. Uruchomienie Backendu
 1. Przejdź do folderu `backend`:
    ```bash
    cd backend
@@ -65,6 +67,7 @@ cd Relay
    ```bash
    STRAVA_CLIENT_ID="twoje_id"
    STRAVA_CLIENT_SECRET="twoj_secret"
+   STRAVA_ADMIN_ATHLETE_ID="id_admina"
    ```
 3. Uruchom serwer:
    ```bash
@@ -72,7 +75,7 @@ cd Relay
    ```
    *Backend uruchomi się na porcie 8080.*
 
-### 3. Uruchomienie Front-endu (React / Vite)
+### 3. Uruchomienie Frontendu
 1. Otwórz nową zakładkę terminala i przejdź do folderu `frontend`:
    ```bash
    cd frontend
